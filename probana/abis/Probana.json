@@ -81,6 +81,31 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "yesOrders",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "noOrders",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "OrderBookUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "orderId",
         "type": "uint256"
       }

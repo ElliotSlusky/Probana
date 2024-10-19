@@ -2,6 +2,7 @@ import {
   Deposit as DepositEvent,
   MarketClosed as MarketClosedEvent,
   MarketCreated as MarketCreatedEvent,
+  OrderBookUpdated as OrderBookUpdatedEvent,
   OrderCancelled as OrderCancelledEvent,
   OrderMatched as OrderMatchedEvent,
   OrderPlaced as OrderPlacedEvent,
@@ -11,6 +12,7 @@ import {
   Deposit,
   MarketClosed,
   MarketCreated,
+  OrderBookUpdated,
   OrderCancelled,
   OrderMatched,
   OrderPlaced,
@@ -53,6 +55,21 @@ export function handleMarketCreated(event: MarketCreatedEvent): void {
   entity.name = event.params.name
   entity.rules = event.params.rules
   entity.creator = event.params.creator
+
+  entity.blockNumber = event.block.number
+  entity.blockTimestamp = event.block.timestamp
+  entity.transactionHash = event.transaction.hash
+
+  entity.save()
+}
+
+export function handleOrderBookUpdated(event: OrderBookUpdatedEvent): void {
+  let entity = new OrderBookUpdated(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  )
+  entity.marketId = event.params.marketId
+  entity.yesOrders = event.params.yesOrders
+  entity.noOrders = event.params.noOrders
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp

@@ -4,6 +4,7 @@ import {
   Deposit,
   MarketClosed,
   MarketCreated,
+  OrderBookUpdated,
   OrderCancelled,
   OrderMatched,
   OrderPlaced,
@@ -76,6 +77,37 @@ export function createMarketCreatedEvent(
   )
 
   return marketCreatedEvent
+}
+
+export function createOrderBookUpdatedEvent(
+  marketId: BigInt,
+  yesOrders: Array<BigInt>,
+  noOrders: Array<BigInt>
+): OrderBookUpdated {
+  let orderBookUpdatedEvent = changetype<OrderBookUpdated>(newMockEvent())
+
+  orderBookUpdatedEvent.parameters = new Array()
+
+  orderBookUpdatedEvent.parameters.push(
+    new ethereum.EventParam(
+      "marketId",
+      ethereum.Value.fromUnsignedBigInt(marketId)
+    )
+  )
+  orderBookUpdatedEvent.parameters.push(
+    new ethereum.EventParam(
+      "yesOrders",
+      ethereum.Value.fromUnsignedBigIntArray(yesOrders)
+    )
+  )
+  orderBookUpdatedEvent.parameters.push(
+    new ethereum.EventParam(
+      "noOrders",
+      ethereum.Value.fromUnsignedBigIntArray(noOrders)
+    )
+  )
+
+  return orderBookUpdatedEvent
 }
 
 export function createOrderCancelledEvent(orderId: BigInt): OrderCancelled {

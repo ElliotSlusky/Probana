@@ -27,6 +27,16 @@ type MarketCreated @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
+type OrderBookUpdated @entity(immutable: true) {
+  id: Bytes!
+  marketId: BigInt! # uint256
+  yesOrders: [BigInt!]! # uint256[]
+  noOrders: [BigInt!]! # uint256[]
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
 type OrderCancelled @entity(immutable: true) {
   id: Bytes!
   orderId: BigInt! # uint256

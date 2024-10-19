@@ -64,6 +64,7 @@ contract Probana {
         uint amount,
         uint price
     );
+
     event OrderCancelled(uint orderId);
     event OrderMatched(
         uint marketId,
@@ -73,6 +74,11 @@ contract Probana {
     );
     event Deposit(address indexed user, uint amount);
     event Withdraw(address indexed user, uint amount);
+    event OrderBookUpdated(
+        uint marketId,
+        uint[] yesOrders,
+        uint[] noOrders
+    );
 
     constructor(address usdcAddress) {
         usdc = IERC20(usdcAddress);
@@ -176,6 +182,7 @@ contract Probana {
         }
 
         emit OrderPlaced(orderId, marketId, msg.sender, outcome, amount, price);
+        emit OrderBookUpdated(marketId, marketYesOrders[marketId], marketNoOrders[marketId]); // Emit order book update
         matchOrders(marketId);
     }
 
@@ -193,6 +200,7 @@ contract Probana {
         _removeOrderFromArray(orderId, order.marketId, order.outcome);
 
         emit OrderCancelled(orderId);
+        emit OrderBookUpdated(order.marketId, marketYesOrders[order.marketId], marketNoOrders[order.marketId]); // Emit order book update
     }
 
     function matchOrders(uint marketId) internal {
@@ -236,6 +244,8 @@ contract Probana {
                 if (noOrder.amount == 0) {
                     _removeOrderFromArray(noOrderId, marketId, Outcome.No);
                 }
+
+                emit OrderBookUpdated(marketId, marketYesOrders[marketId], marketNoOrders[marketId]); // Emit order book update
             } else {
                 break;
             }
@@ -257,7 +267,7 @@ contract Probana {
                 break;
             }
         }
-    }
+    } 
 
     function _min(uint a, uint b) internal pure returns (uint) {
         return a < b ? a : b;
