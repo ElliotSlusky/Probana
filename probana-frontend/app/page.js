@@ -12,13 +12,13 @@ import {
 } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { http } from 'viem';
-import { mainnet } from 'viem/chains';
+import { polygon } from 'viem/chains';
 
 const config = createConfig({
-  chains: [mainnet],
+  chains: [polygon],
   multiInjectedProviderDiscovery: false,
   transports: {
-    [mainnet.id]: http(),
+    [polygon.id]: http(),
   },
 });
 
@@ -47,14 +47,13 @@ export default function App() {
 function AccountInfo() {
   const { address, isConnected, chain } = useAccount();
 
-
   return (
     <div>
       <p>
-        wagmi connected: {isConnected ? 'true' : 'false'}
+        Polygon connected: {isConnected ? 'true' : 'false'}
       </p>
-      <p>wagmi address: {address}</p>
-      <p>wagmi network: {chain?.id}</p>
+      <p>Polygon address: {address}</p>
+      <p>Polygon network: {chain?.id}</p>
     </div>
   );
-};
+}
