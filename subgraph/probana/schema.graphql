@@ -1,37 +1,69 @@
-type ExampleEntity @entity {
-  id: ID!
-
-  optionalBoolean: Boolean
-  requiredBoolean: Boolean!
-  optionalBooleanList: [Boolean!]
-  requiredBooleanList: [Boolean!]!
-
-  optionalString: String
-  requiredString: String!
-  optionalStringList: [String!]
-  requiredStringList: [String!]!
-
-  optionalBytes: Bytes
-  requiredBytes: Bytes!
-  optionalBytesList: [Bytes!]
-  requiredBytesList: [Bytes!]!
-
-  optionalInt: Int
-  requiredInt: Int!
-  optionalIntList: [Int!]
-  requiredIntList: [Int!]!
-
-  optionalBigInt: BigInt
-  requiredBigInt: BigInt!
-  optionalBigIntList: [BigInt!]
-  requiredBigIntList: [BigInt!]!
-
-  optionalReference: OtherEntity
-  requiredReference: OtherEntity!
-  optionalReferenceList: [OtherEntity!]
-  requiredReferenceList: [OtherEntity!]!
+type Deposit @entity(immutable: true) {
+  id: Bytes!
+  user: Bytes! # address
+  amount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
 }
 
-type OtherEntity @entity {
-  id: ID!
+type MarketClosed @entity(immutable: true) {
+  id: Bytes!
+  marketId: BigInt! # uint256
+  winningOutcome: Int! # uint8
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type MarketCreated @entity(immutable: true) {
+  id: Bytes!
+  marketId: BigInt! # uint256
+  name: String! # string
+  rules: String! # string
+  creator: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type OrderCancelled @entity(immutable: true) {
+  id: Bytes!
+  orderId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type OrderMatched @entity(immutable: true) {
+  id: Bytes!
+  marketId: BigInt! # uint256
+  orderId: BigInt! # uint256
+  matchedAmount: BigInt! # uint256
+  price: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type OrderPlaced @entity(immutable: true) {
+  id: Bytes!
+  orderId: BigInt! # uint256
+  marketId: BigInt! # uint256
+  trader: Bytes! # address
+  outcome: Int! # uint8
+  amount: BigInt! # uint256
+  price: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type Withdraw @entity(immutable: true) {
+  id: Bytes!
+  user: Bytes! # address
+  amount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
 }
