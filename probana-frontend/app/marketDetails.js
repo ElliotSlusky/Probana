@@ -7,7 +7,8 @@ const marketDetails = [
         "Kamala Harris",
         "Ryan Ng"
       ],
-      votes: [20, 30, 92]
+      votes: [20, 30, 92],
+      sumVotes: 142
     },
     {
       key: 2,
@@ -17,7 +18,8 @@ const marketDetails = [
         "Kamala Harris",
         "Ryan Ng"
       ],
-      votes: [20, 30, 92]
+      votes: [20, 30, 92],
+      sumVotes: 142
     },
     {
       key: 3,
@@ -27,7 +29,8 @@ const marketDetails = [
         "Kamala Harris",
         "Ryan Ng"
       ],
-      votes: [20, 30, 92]
+      votes: [20, 30, 92],
+      sumVotes: 142
     },
     {
       key: 4,
@@ -37,7 +40,8 @@ const marketDetails = [
         "Kamala Harris",
         "Ryan Ng"
       ],
-      votes: [20, 30, 92]
+      votes: [20, 30, 92],
+      sumVotes: 142
     },
     {
       key: 5,
@@ -47,7 +51,8 @@ const marketDetails = [
         "Kamala Harris",
         "Ryan Ng"
       ],
-      votes: [20, 30, 92]
+      votes: [20, 30, 92],
+      sumVotes: 142
     },
     {
       key: 6,
@@ -57,7 +62,8 @@ const marketDetails = [
         "Kamala Harris",
         "Ryan Ng"
       ],
-      votes: [20, 30, 92]
+      votes: [20, 30, 92],
+      sumVotes: 142
     },
     {
       key: 7,
@@ -67,7 +73,8 @@ const marketDetails = [
         "Kamala Harris",
         "Ryan Ng"
       ],
-      votes: [20, 30, 92]
+      votes: [20, 30, 92],
+      sumVotes: 142
     },
 
   ]
