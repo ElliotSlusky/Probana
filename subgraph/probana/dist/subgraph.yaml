@@ -1,8 +1,8 @@
 specVersion: 0.0.5
-description: 'example of a subgraph'
-repository: https://github.com/graphprotocol/graph-tooling.git
+description: example of a subgraph
+repository: 'https://github.com/graphprotocol/graph-cli.git'
 schema:
-  file: ./schema.graphql
+  file: schema.graphql
 dataSources:
   - kind: ethereum/contract
     name: ExampleSubgraph
@@ -14,13 +14,13 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.7
       language: wasm/assemblyscript
-      file: ./src/mapping.ts
+      file: ExampleSubgraph/ExampleSubgraph.wasm
       entities:
         - ExampleEntity
         - OtherEntity
       abis:
         - name: ExampleContract
-          file: ./abis/ExampleContract.json
+          file: ExampleSubgraph/abis/ExampleContract.json
       eventHandlers:
         - event: ExampleEvent(indexed string)
           handler: handleExampleEvent
