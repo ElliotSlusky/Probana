@@ -34,11 +34,11 @@ const marketDetails = [
     },
     {
       key: 4,
-      prompt: "Who is going to win the 2024 presidential election?",
+      binary: true,
+      prompt: "Senate control after 2024 election?",
       options: [
-        "Donald Trump",
-        "Kamala Harris",
-        "Ryan Ng"
+        "Democrats",
+        "Republicans"
       ],
       votes: [20, 30, 92],
       sumVotes: 142
