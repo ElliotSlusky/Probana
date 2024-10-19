@@ -4,19 +4,13 @@ indexerHints:
 schema:
   file: ./schema.graphql
 dataSources:
-  - kind: arweave
+  - kind: substreams
     name: Contract
     network: matic
     source:
-      owner: ""
+      package:
+        moduleName: graph_out
+        file: ./
     mapping:
       apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      entities:
-        - Block
-        - Transaction
-      blockHandlers:
-        - handler: handleBlock
-      transactionHandlers:
-        - handler: handleTx
-      file: ./src/mapping.ts
+      kind: substreams/graph-entities
