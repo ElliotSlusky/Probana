@@ -1,8 +1,9 @@
+
 export default function Navbar() {
   return (
-    <div className="fixed top-0">
+    <div className="text-white w-full bg-white h-[100px] flex flex-row justify-between">
       <h3>
-        PredictShit
+        Probana
       </h3>
 
     </div>

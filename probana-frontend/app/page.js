@@ -13,6 +13,7 @@ import {
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { http } from 'viem';
 import { polygon } from 'viem/chains';
+import Navbar from './components/navbar';
 
 const config = createConfig({
   chains: [polygon],
@@ -35,6 +36,7 @@ export default function App() {
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
           <DynamicWagmiConnector>
+            <Navbar/>
             <DynamicWidget />
             <AccountInfo />
           </DynamicWagmiConnector>
