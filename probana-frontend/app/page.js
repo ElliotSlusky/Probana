@@ -1,9 +1,60 @@
-import Image from "next/image";
+"use client"
+import {
+  DynamicContextProvider,
+  DynamicWidget,
+} from '@dynamic-labs/sdk-react-core';
+import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
+import { DynamicWagmiConnector } from '@dynamic-labs/wagmi-connector';
+import {
+  createConfig,
+  WagmiProvider,
+  useAccount,
+} from 'wagmi';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { http } from 'viem';
+import { mainnet } from 'viem/chains';
 
-export default function Home() {
+const config = createConfig({
+  chains: [mainnet],
+  multiInjectedProviderDiscovery: false,
+  transports: {
+    [mainnet.id]: http(),
+  },
+});
+
+const queryClient = new QueryClient();
+
+export default function App() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-
-    </div>
+    <DynamicContextProvider
+      settings={{
+        environmentId: 'd001273d-4120-4857-ae19-2917f4b59790',
+        walletConnectors: [EthereumWalletConnectors],
+      }}
+    >
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <DynamicWagmiConnector>
+            <DynamicWidget />
+            <AccountInfo />
+          </DynamicWagmiConnector>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </DynamicContextProvider>
   );
 }
+
+function AccountInfo() {
+  const { address, isConnected, chain } = useAccount();
+
+
+  return (
+    <div>
+      <p>
+        wagmi connected: {isConnected ? 'true' : 'false'}
+      </p>
+      <p>wagmi address: {address}</p>
+      <p>wagmi network: {chain?.id}</p>
+    </div>
+  );
+};
