@@ -14,6 +14,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { http } from 'viem';
 import { polygon } from 'viem/chains';
 import Navbar from './components/navbar';
+import MarketGrid from './components/marketGrid';
 
 const config = createConfig({
   chains: [polygon],
@@ -39,6 +40,9 @@ export default function App() {
             <Navbar />
             <DynamicWidget />
             <AccountInfo />
+            <Navbar />
+            <MarketGrid />
+            {/* <AccountInfo /> */}
           </DynamicWagmiConnector>
         </QueryClientProvider>
       </WagmiProvider>
