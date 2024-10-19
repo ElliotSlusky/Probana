@@ -15,7 +15,7 @@ interface IERC20 {
     ) external view returns (uint);
 }
 
-contract PolymarketReplica {
+contract Probana {
     IERC20 public usdc;
     enum Outcome {
         Yes,
