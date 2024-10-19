@@ -15,6 +15,7 @@ import { http } from 'viem';
 import { polygon } from 'viem/chains';
 import Navbar from './components/navbar';
 import MarketGrid from './components/marketGrid';
+import marketDetails from './marketDetails';
 
 const config = createConfig({
   chains: [polygon],
@@ -26,7 +27,11 @@ const config = createConfig({
 
 const queryClient = new QueryClient();
 
+
+
+
 export default function App() {
+
   return (
     <DynamicContextProvider
       settings={{
@@ -37,10 +42,9 @@ export default function App() {
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
           <DynamicWagmiConnector>
-            <Navbar />
-            <DynamicWidget />
+            <Navbar/>
+            <MarketGrid marketDetails={marketDetails}/>
             <AccountInfo />
-            <Navbar />
             <MarketGrid />
             {/* <AccountInfo /> */}
           </DynamicWagmiConnector>
