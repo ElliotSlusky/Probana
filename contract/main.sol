@@ -28,6 +28,7 @@ contract Probana {
         string rules;
         address creator;
         bool isActive;
+        Outcome winningOutcome; // Add this line to store the winning outcome
     }
 
     struct Order {
@@ -54,7 +55,7 @@ contract Probana {
         string rules,
         address creator
     );
-    event MarketClosed(uint marketId);
+    event MarketClosed(uint marketId, Outcome winningOutcome); // Modify event to include winning outcome
     event OrderPlaced(
         uint orderId,
         uint marketId,
@@ -79,11 +80,18 @@ contract Probana {
 
     function createMarket(string memory name, string memory rules) external {
         uint marketId = nextMarketId++;
-        markets[marketId] = Market(marketId, name, rules, msg.sender, true);
+        markets[marketId] = Market(
+            marketId, 
+            name, 
+            rules, 
+            msg.sender, 
+            true, 
+            Outcome.Yes // Default value, can be set to any as it won't be used until market is closed
+        );
         emit MarketCreated(marketId, name, rules, msg.sender);
     }
 
-    function closeMarket(uint marketId) external {
+    function closeMarket(uint marketId, Outcome winningOutcome) external {
         Market storage market = markets[marketId];
         require(
             market.creator == msg.sender,
@@ -92,7 +100,24 @@ contract Probana {
         require(market.isActive, "Market is already closed");
 
         market.isActive = false;
-        emit MarketClosed(marketId);
+        market.winningOutcome = winningOutcome; // Set the winning outcome
+
+        // Distribute funds to the winning side
+        _distributeFunds(marketId, winningOutcome);
+
+        emit MarketClosed(marketId, winningOutcome);
+    }
+
+    function _distributeFunds(uint marketId, Outcome winningOutcome) internal {
+        uint[] storage winningOrders = winningOutcome == Outcome.Yes
+            ? marketYesOrders[marketId]
+            : marketNoOrders[marketId];
+
+        for (uint i = 0; i < winningOrders.length; i++) {
+            Order storage order = orders[winningOrders[i]];
+            uint payout = (order.amount * order.price) / 1000;
+            balances[order.trader] += payout;
+        }
     }
 
     function deposit(uint amount) external {
