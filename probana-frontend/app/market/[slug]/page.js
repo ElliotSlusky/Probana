@@ -31,6 +31,8 @@ import {
 } from '@dynamic-labs/sdk-react-core';
 import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
 import { DynamicWagmiConnector } from '@dynamic-labs/wagmi-connector';
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
+
 import {
     createConfig,
     WagmiProvider,
@@ -462,7 +464,7 @@ function MarketPage({ params, searchParams }) {
 
         if (!primaryWallet || !isEthereumWallet(primaryWallet)) return null;
 
-        async function createMarket() {
+        async function placeOrder() {
 
 
             const publicClient = await primaryWallet.getPublicClient();
@@ -470,12 +472,12 @@ function MarketPage({ params, searchParams }) {
 
             // Define the ABI of the contract function you want to call
             const abi = [
-                "function createMarket(string question, string rules) public"
+                "function placeOrder(uint256 marketId, uint8 side, uint8 outcome, uint256 amount, uint256 price) public"
             ];
             const iface = new ethers.utils.Interface(abi);
 
             // Encode the function call
-            const data = iface.encodeFunctionData("createMarket", [prompt, option1]);
+            const data = iface.encodeFunctionData("placeOrder", [params.slug, side === "Buy" ? 0 : 1, outcome === "Yes" ? 0 : 1, parseFloat(amount) * 10 ** 6, parseFloat(price) * 10 ** 4]);
 
             const transaction = {
                 to: contractAddress,
@@ -567,7 +569,7 @@ function MarketPage({ params, searchParams }) {
                         </div>
                         <div>
                             <label htmlFor="price" className="block mb-1">Price</label>
-                            <input type="number" id="price" className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+                            <input value={price} onChange={(e) => { setPrice(e.target.value) }} type="number" id="price" className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
                         </div>
                         <button type="submit" className="w-full bg-blue-500 dark:bg-blue-700 text-white p-2 rounded hover:bg-blue-600 dark:hover:bg-blue-600">
                             Place Order
