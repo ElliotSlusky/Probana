@@ -3,6 +3,8 @@ import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react';
 // import { Line } from 'react-chartjs-2';
 import axios from 'axios';
+import { isEthereumWallet } from '@dynamic-labs/ethereum';
+
 import OrderbookUI from '../../components/orderbookUI';
 // import {
 //     Chart as ChartJS,
@@ -75,15 +77,13 @@ export default function MarketPagrewe({ params, searchParams }) {
     );
 }
 function MarketPage({ params, searchParams }) {
-    const { connector } = useAccount(); // Get the connected wallet's provider
+    const { connector } = useAccount(); // Ensure this is at the top level
 
-    const [price, setPrice] = useState(0.5); // Example initial price
+    const [price, setPrice] = useState(0.5); // Ensure this is at the top level
     const [side, setSide] = useState('Buy');
     const [type, setType] = useState('Yes');
-
     const [marketData, setMarketData] = useState(null);
-
-    const [txnHash, setTxnHash] = useState(''); // Move useState to the top level
+    const [txnHash, setTxnHash] = useState(''); // Ensure this is at the top level
 
     useEffect(() => {
         // if (!router.isReady) return; // Ensure router is ready before using it
@@ -364,7 +364,8 @@ function MarketPage({ params, searchParams }) {
 
 
 
-    }, [connector]); // Add connector to dependencies
+    }, [connector]); // Ensure dependencies are correct
+    const { primaryWallet } = useDynamicContext();
 
     // Function to convert odds to cent format and adjust for "No" type
     const convertOddsToCents = (odds) => {
@@ -458,7 +459,6 @@ function MarketPage({ params, searchParams }) {
         console.log(event);
 
         const contractAddress = "0x7A0aE150F6E03f6B038B673c7B32341496F65f41";
-        const { primaryWallet } = useDynamicContext();
 
         if (!primaryWallet || !isEthereumWallet(primaryWallet)) return null;
 
@@ -472,8 +472,10 @@ function MarketPage({ params, searchParams }) {
             ];
             const iface = new ethers.utils.Interface(abi);
 
+            console.log(amount)
+            console.log([params.slug, side === "Buy" ? 0 : 1, type === "Yes" ? 0 : 1, parseFloat(amount) * 10 ** 6, parseFloat(price) * 10 ** 4])
             // Encode the function call
-            const data = iface.encodeFunctionData("placeOrder", [params.slug, side === "Buy" ? 0 : 1, outcome === "Yes" ? 0 : 1, parseFloat(amount) * 10 ** 6, parseFloat(price) * 10 ** 4]);
+            const data = iface.encodeFunctionData("placeOrder", [params.slug, side === "Buy" ? 0 : 1, type === "Yes" ? 0 : 1, parseFloat(amount) * 10 ** 6, parseFloat(price) * 10 ** 4]);
 
             const transaction = {
                 to: contractAddress,
