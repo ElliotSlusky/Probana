@@ -24,13 +24,13 @@ export default function Market({ market, odds }) {
                         className="bg-[#2C4B51] py-[8px] px-[8px] rounded-sm hover:bg-[#27ae60] text-[#27ae60] hover:text-white grow"
                         href={'/market/' + id}
                     >
-                        {/* {yesLabel} */}
+                        Yes
                     </Link>
                     <Link
                         className="bg-[#414052] py-[8px] px-[8px] rounded-sm text-[#e64800] hover:bg-[#e64800] hover:text-white grow"
                         href={`/market/` + id}
                     >
-                        {/* {noLabel} */}
+                        No
                     </Link>
                 </div>
             </div>

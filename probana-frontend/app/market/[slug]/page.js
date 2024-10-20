@@ -202,7 +202,7 @@ function MarketPage({ params, searchParams }) {
     const adjustedAsks = type === 'Yes' ? orderBookData.asks : orderBookData.bids;
 
     return (
-        <div className="flex flex-col min-h-screen p-8 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+        <div className="flex flex-col min-h-screen p-8 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-[100px]">
             <h1 className="text-3xl font-bold mb-6">{marketData?.name}</h1>
 
             {/* New section to display the rules */}
