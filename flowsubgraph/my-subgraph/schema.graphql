@@ -22,6 +22,8 @@ type MarketCreated @entity(immutable: true) {
   name: String! # string
   rules: String! # string
   creator: Bytes! # address
+  yesLabel: String! # string
+  noLabel: String! # string
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!

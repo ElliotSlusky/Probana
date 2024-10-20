@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: Probana
-    network: flow-mainnet
+    network: mainnet
     source:
-      address: "0xc108536d8D684E344251dAa779Cc88AD14D222b7"
+      address: "0xADd787234F5Aeaf810466b1Ec83ad7Cd03EfDB9d"
       abi: Probana
-      startBlock: 4832026
+      startBlock: 4834440
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -32,7 +32,7 @@ dataSources:
           handler: handleDeposit
         - event: MarketClosed(uint256,uint8)
           handler: handleMarketClosed
-        - event: MarketCreated(uint256,string,string,address)
+        - event: MarketCreated(uint256,string,string,address,string,string)
           handler: handleMarketCreated
         - event: OrderBookUpdated(uint256,uint256[],uint256[])
           handler: handleOrderBookUpdated

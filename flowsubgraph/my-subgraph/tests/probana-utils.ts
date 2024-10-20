@@ -54,7 +54,9 @@ export function createMarketCreatedEvent(
   marketId: BigInt,
   name: string,
   rules: string,
-  creator: Address
+  creator: Address,
+  yesLabel: string,
+  noLabel: string
 ): MarketCreated {
   let marketCreatedEvent = changetype<MarketCreated>(newMockEvent())
 
@@ -74,6 +76,12 @@ export function createMarketCreatedEvent(
   )
   marketCreatedEvent.parameters.push(
     new ethereum.EventParam("creator", ethereum.Value.fromAddress(creator))
+  )
+  marketCreatedEvent.parameters.push(
+    new ethereum.EventParam("yesLabel", ethereum.Value.fromString(yesLabel))
+  )
+  marketCreatedEvent.parameters.push(
+    new ethereum.EventParam("noLabel", ethereum.Value.fromString(noLabel))
   )
 
   return marketCreatedEvent

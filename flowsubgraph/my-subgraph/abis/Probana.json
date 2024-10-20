@@ -114,6 +114,18 @@
         "internalType": "address",
         "name": "creator",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "yesLabel",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "noLabel",
+        "type": "string"
       }
     ],
     "name": "MarketCreated",

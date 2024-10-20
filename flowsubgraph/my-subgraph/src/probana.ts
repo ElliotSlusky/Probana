@@ -55,6 +55,8 @@ export function handleMarketCreated(event: MarketCreatedEvent): void {
   entity.name = event.params.name
   entity.rules = event.params.rules
   entity.creator = event.params.creator
+  entity.yesLabel = event.params.yesLabel
+  entity.noLabel = event.params.noLabel
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
