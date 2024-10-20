@@ -122,7 +122,7 @@ function MarketPage({ params, searchParams }) {
         async function callReadFunction() {
             try {
                 // Use the connected wallet's provider
-                const provider = connector?.getProvider();
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
 
                 if (!provider) {
                     console.error('No provider found');
