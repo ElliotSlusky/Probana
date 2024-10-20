@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from 'react';
 export default function OrderBook({ asks, bids, tradeType }) {
     // Ref for scrolling bids
     const bidsRef = useRef(null);
+    // format of asks and bids is {price, shares}
 
     // Scrolls to the bottom of the bids list
     useEffect(() => {
