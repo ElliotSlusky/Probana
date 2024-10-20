@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { getMomentIDs } from "../../app/components/getNFTs";
 import styles from "./MomentChecker.module.css";
+import { Spinner } from "../../app/components/Spinner"; // Añadir un spinner para feedback visual mientras se cargan datos
 
 function MomentChecker() {
     const [address, setAddress] = useState("");
@@ -10,7 +11,7 @@ function MomentChecker() {
     const [moments, setMoments] = useState([]);
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [hoveredMoment, setHoveredMoment] = useState(null); // Track the hovered moment
+    const [hoveredMoment, setHoveredMoment] = useState(null);
 
     const handleCheckMoments = async () => {
         if (address.trim() === "") {
@@ -42,28 +43,34 @@ function MomentChecker() {
 
     return (
         <div className={styles.container}>
-            <h1>NBA Top Shot Moment Checker</h1>
-            <input
-                className={styles.input}
-                type="text"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="Enter account address"
-            />
-            <button 
-                className={styles.button} 
-                onClick={handleCheckMoments} 
-                disabled={loading || !address.trim()}
-            >
-                {loading ? "Loading..." : "Check Moments"}
-            </button>
+            <header className={styles.header}>
+                <h1 className={styles.title}>NBA Top Shot Moment Checker</h1>
+                <p className={styles.subtitle}>Enter your wallet address to check your Moments collection</p>
+            </header>
+
+            <div className={styles.inputContainer}>
+                <input
+                    className={styles.input}
+                    type="text"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="Enter account address"
+                />
+                <button
+                    className={styles.button}
+                    onClick={handleCheckMoments}
+                    disabled={loading || !address.trim()}
+                >
+                    {loading ? <Spinner /> : "Check Moments"} {/* Muestra un spinner durante la carga */}
+                </button>
+            </div>
 
             {error && <p className={styles.error}>{error}</p>}
 
             {hasMoments === null ? null : hasMoments ? (
                 <div className={styles.momentsList}>
-                    <h2>The account has the following moments:</h2>
-                    <ul>
+                    <h2>Your NBA Top Shot Moments</h2>
+                    <ul className={styles.momentsGrid}>
                         {moments.map((moment) => (
                             <li key={moment.id} className={styles.momentCard}>
                                 <div 
