@@ -45,3 +45,5 @@ dataSources:
         - event: Withdraw(indexed address,uint256)
           handler: handleWithdraw
       file: ./src/probana.ts
+
+description: "My Subgraph v1.0.1"  # Increment the version here
