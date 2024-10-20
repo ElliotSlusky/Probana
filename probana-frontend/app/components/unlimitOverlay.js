@@ -41,10 +41,10 @@ const UnlimitOverlay = () => {
                 externalId: randomString,
                 defaultFiat: {
                     currency: "USD",
-                    amount: "64",
+                    amount: "9",
                 },
                 defaultCrypto: {
-                    currency: "ETH"
+                    currency: "USDC"
                 },
             });
             overlayInstanceSDK.current?.show();
@@ -54,12 +54,11 @@ const UnlimitOverlay = () => {
 
     // Component render
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
-            <h2>Unlimit Crypto - Overlay SDK Example</h2>
-            <button onClick={handleOnClick} style={{ padding: '10px 20px', margin: '20px', fontSize: '16px' }}>
-                {isOverlayVisible ? 'Hide Overlay SDK' : 'Show Overlay SDK'}
+        <div>
+
+            <button onClick={handleOnClick} className='bg-[#2d9cdc] text-white px-[20px] py-[10px] rounded-md'>
+                {'Buy Crypto 💳'}
             </button>
-            {/* Container for the overlay button */}
             <div id="overlay-button"></div>
         </div>
     );

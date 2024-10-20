@@ -9,6 +9,7 @@ import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { isEthereumWallet } from '@dynamic-labs/ethereum';
 import { ethers } from 'ethers';
 import axios from 'axios';
+import UnlimitOverlay from '../../app/components/unlimitOverlay';
 
 const SUBGRAPH_ENDPOINT = 'https://subgraph.satsuma-prod.com/97d738dd3352/elliots-team--201737/Probana/version/v0.0.1-new-version/api'; // Replace with your subgraph endpoint
 
@@ -284,6 +285,7 @@ export default function Navbar() {
           </h1>
         </Link>
         <div className='flex flex-row gap-[10px] items-center'>
+          <UnlimitOverlay /> 
           <button
             className='bg-[#2d9cdc] text-white px-[20px] py-[10px] rounded-md'
             onClick={() => { setDepositOpen(true) }}
