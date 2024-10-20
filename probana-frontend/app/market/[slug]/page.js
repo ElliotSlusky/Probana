@@ -113,239 +113,240 @@ function MarketPage({ params, searchParams }) {
 
 
 
-        // Use the connected wallet's provider
-        const provider = connector?.getProvider();
-
-        if (!provider) {
-            console.error('No provider found');
-            return;
-        }
-
-        // Define the contract ABI and address
-        const contractABI = [{
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "marketId",
-                    "type": "uint256"
-                }
-            ],
-            "name": "getOrderBookCata",
-            "outputs": [
-                {
-                    "components": [
-                        {
-                            "internalType": "uint256",
-                            "name": "id",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "marketId",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "address",
-                            "name": "trader",
-                            "type": "address"
-                        },
-                        {
-                            "internalType": "enum Probana.Side",
-                            "name": "side",
-                            "type": "uint8"
-                        },
-                        {
-                            "internalType": "enum Probana.Outcome",
-                            "name": "outcome",
-                            "type": "uint8"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "amount",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "price",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "filled",
-                            "type": "uint256"
-                        }
-                    ],
-                    "internalType": "struct Probana.Order[]",
-                    "name": "yesBuys",
-                    "type": "tuple[]"
-                },
-                {
-                    "components": [
-                        {
-                            "internalType": "uint256",
-                            "name": "id",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "marketId",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "address",
-                            "name": "trader",
-                            "type": "address"
-                        },
-                        {
-                            "internalType": "enum Probana.Side",
-                            "name": "side",
-                            "type": "uint8"
-                        },
-                        {
-                            "internalType": "enum Probana.Outcome",
-                            "name": "outcome",
-                            "type": "uint8"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "amount",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "price",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "filled",
-                            "type": "uint256"
-                        }
-                    ],
-                    "internalType": "struct Probana.Order[]",
-                    "name": "noSells",
-                    "type": "tuple[]"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "marketId",
-                    "type": "uint256"
-                }
-            ],
-            "name": "getOrderBookCatb",
-            "outputs": [
-                {
-                    "components": [
-                        {
-                            "internalType": "uint256",
-                            "name": "id",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "marketId",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "address",
-                            "name": "trader",
-                            "type": "address"
-                        },
-                        {
-                            "internalType": "enum Probana.Side",
-                            "name": "side",
-                            "type": "uint8"
-                        },
-                        {
-                            "internalType": "enum Probana.Outcome",
-                            "name": "outcome",
-                            "type": "uint8"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "amount",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "price",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "filled",
-                            "type": "uint256"
-                        }
-                    ],
-                    "internalType": "struct Probana.Order[]",
-                    "name": "yesSells",
-                    "type": "tuple[]"
-                },
-                {
-                    "components": [
-                        {
-                            "internalType": "uint256",
-                            "name": "id",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "marketId",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "address",
-                            "name": "trader",
-                            "type": "address"
-                        },
-                        {
-                            "internalType": "enum Probana.Side",
-                            "name": "side",
-                            "type": "uint8"
-                        },
-                        {
-                            "internalType": "enum Probana.Outcome",
-                            "name": "outcome",
-                            "type": "uint8"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "amount",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "price",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "filled",
-                            "type": "uint256"
-                        }
-                    ],
-                    "internalType": "struct Probana.Order[]",
-                    "name": "noBuys",
-                    "type": "tuple[]"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },]
-        const contractAddress = '0xD236817d53C20412E245699f2ae332eFDDf22D98';
-
-        // Create a contract instance
-        const contract = new ethers.Contract(contractAddress, contractABI, provider);
 
         // Function to call a read function from the contract
         async function callReadFunction() {
             try {
+                // Use the connected wallet's provider
+                const provider = connector?.getProvider();
+
+                if (!provider) {
+                    console.error('No provider found');
+                    return;
+                }
+
+                // Define the contract ABI and address
+                const contractABI = [{
+                    "inputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "marketId",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "getOrderBookCata",
+                    "outputs": [
+                        {
+                            "components": [
+                                {
+                                    "internalType": "uint256",
+                                    "name": "id",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "marketId",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "address",
+                                    "name": "trader",
+                                    "type": "address"
+                                },
+                                {
+                                    "internalType": "enum Probana.Side",
+                                    "name": "side",
+                                    "type": "uint8"
+                                },
+                                {
+                                    "internalType": "enum Probana.Outcome",
+                                    "name": "outcome",
+                                    "type": "uint8"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "amount",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "price",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "filled",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "internalType": "struct Probana.Order[]",
+                            "name": "yesBuys",
+                            "type": "tuple[]"
+                        },
+                        {
+                            "components": [
+                                {
+                                    "internalType": "uint256",
+                                    "name": "id",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "marketId",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "address",
+                                    "name": "trader",
+                                    "type": "address"
+                                },
+                                {
+                                    "internalType": "enum Probana.Side",
+                                    "name": "side",
+                                    "type": "uint8"
+                                },
+                                {
+                                    "internalType": "enum Probana.Outcome",
+                                    "name": "outcome",
+                                    "type": "uint8"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "amount",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "price",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "filled",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "internalType": "struct Probana.Order[]",
+                            "name": "noSells",
+                            "type": "tuple[]"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "marketId",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "getOrderBookCatb",
+                    "outputs": [
+                        {
+                            "components": [
+                                {
+                                    "internalType": "uint256",
+                                    "name": "id",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "marketId",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "address",
+                                    "name": "trader",
+                                    "type": "address"
+                                },
+                                {
+                                    "internalType": "enum Probana.Side",
+                                    "name": "side",
+                                    "type": "uint8"
+                                },
+                                {
+                                    "internalType": "enum Probana.Outcome",
+                                    "name": "outcome",
+                                    "type": "uint8"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "amount",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "price",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "filled",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "internalType": "struct Probana.Order[]",
+                            "name": "yesSells",
+                            "type": "tuple[]"
+                        },
+                        {
+                            "components": [
+                                {
+                                    "internalType": "uint256",
+                                    "name": "id",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "marketId",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "address",
+                                    "name": "trader",
+                                    "type": "address"
+                                },
+                                {
+                                    "internalType": "enum Probana.Side",
+                                    "name": "side",
+                                    "type": "uint8"
+                                },
+                                {
+                                    "internalType": "enum Probana.Outcome",
+                                    "name": "outcome",
+                                    "type": "uint8"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "amount",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "price",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "filled",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "internalType": "struct Probana.Order[]",
+                            "name": "noBuys",
+                            "type": "tuple[]"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },]
+                const contractAddress = '0xD236817d53C20412E245699f2ae332eFDDf22D98';
+
+                // Create a contract instance
+                const contract = new ethers.Contract(contractAddress, contractABI, provider);
+
                 // Replace 'readFunctionName' with the actual function name you want to call
                 const result = await contract.getOrderBookCata(found.marketId);
                 console.log('Result:', result);
@@ -355,6 +356,8 @@ function MarketPage({ params, searchParams }) {
         }
 
         callReadFunction()
+
+
 
 
 
@@ -447,6 +450,51 @@ function MarketPage({ params, searchParams }) {
     const adjustedBids = type === 'Yes' ? orderBookData.bids : orderBookData.asks;
     const adjustedAsks = type === 'Yes' ? orderBookData.asks : orderBookData.bids;
 
+    async function handleSubmit(event) {
+        event.preventDefault()
+        console.log(event)
+
+        const contractAddress = "0x7A0aE150F6E03f6B038B673c7B32341496F65f41";
+        // const spenderAddress = "0x7A0aE150F6E03f6B038B673c7B32341496F65f41";
+        // const amount = ethers.utils.parseUnits("1.0", 18); // Convert 1.0 ETH to wei
+        const { primaryWallet } = useDynamicContext();
+        const [txnHash, setTxnHash] = useState('');
+
+        if (!primaryWallet || !isEthereumWallet(primaryWallet)) return null;
+
+        async function createMarket() {
+
+
+            const publicClient = await primaryWallet.getPublicClient();
+            const walletClient = await primaryWallet.getWalletClient();
+
+            // Define the ABI of the contract function you want to call
+            const abi = [
+                "function createMarket(string question, string rules) public"
+            ];
+            const iface = new ethers.utils.Interface(abi);
+
+            // Encode the function call
+            const data = iface.encodeFunctionData("createMarket", [prompt, option1]);
+
+            const transaction = {
+                to: contractAddress,
+                data: data,
+            };
+
+            const hash = await walletClient.sendTransaction(transaction);
+            setTxnHash(hash);
+
+            const receipt = await publicClient.getTransactionReceipt({
+                hash,
+            });
+
+            console.log(receipt);
+        };
+
+        createMarket()
+    }
+
     return (
         <div className="flex flex-col min-h-screen p-8 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-[100px]">
             <h1 className="text-3xl font-bold mb-6">{marketData?.name}</h1>
@@ -488,7 +536,7 @@ function MarketPage({ params, searchParams }) {
 
                 <div className="w-1/4 bg-gray-100 dark:bg-gray-800 p-6 rounded">
                     <h2 className="text-xl font-semibold mb-4">Place Limit Order</h2>
-                    <form className="space-y-4">
+                    <form className="space-y-4" onSubmit={handleSubmit}>
                         <div>
                             <label htmlFor="side" className="block mb-1">Side</label>
                             <select
