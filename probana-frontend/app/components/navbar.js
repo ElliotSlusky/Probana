@@ -4,6 +4,7 @@ import {
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import ApproveSpending from './approveSpending';
+
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { isEthereumWallet } from '@dynamic-labs/ethereum';
 import { ethers } from 'ethers';
