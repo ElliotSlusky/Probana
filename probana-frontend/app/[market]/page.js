@@ -1,5 +1,5 @@
 "use client"
-
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import OrderbookUI from '../components/orderbookUI';
@@ -28,6 +28,10 @@ export default function MarketPage({ params }) {
     const [price, setPrice] = useState(0.5); // Example initial price
     const [side, setSide] = useState('Buy');
     const [type, setType] = useState('Yes');
+    const router = useRouter()
+    const { prompt } = router.query
+
+    console.log(prompt, "hi")
 
     // Function to convert odds to cent format and adjust for "No" type
     const convertOddsToCents = (odds) => {

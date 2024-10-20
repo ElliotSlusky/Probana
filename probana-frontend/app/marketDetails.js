@@ -10,18 +10,18 @@ const marketDetails = [
   },
   {
     key: 2,
-    prompt: "Senate control after 2024 election?",
-    option1: "Democrats",
-    option2: "Republicans",
+    prompt: "Donald or Kamala",
+    option1: "Donald",
+    option2: "Kamala",
     votes1: 20,
     votes2: 30,
     odds: 0.3
   },
   {
     key: 3,
-    prompt: "Senate control after 2024 election?",
-    option1: "Democrats",
-    option2: "Republicans",
+    prompt: "is orange the best color?",
+    option1: "Yes",
+    option2: "No",
     votes1: 20,
     votes2: 30,
     odds: 0.3

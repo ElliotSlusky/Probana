@@ -44,7 +44,7 @@ export default function App() {
           <DynamicWagmiConnector>
             <Navbar/>
             <MarketGrid marketDetails={marketDetails}/>
-            <AccountInfo />
+            {/* <AccountInfo /> */}
             <MarketGrid />
           </DynamicWagmiConnector>
         </QueryClientProvider>

@@ -7,7 +7,7 @@ export default function Navbar() {
   return (
     <div className="flex flex-col items-center">
 
-      <div className="text-white w-full h-[100px] flex flex-row justify-between items-center px-[40px]">
+      <div className="text-white w-full h-[100px] flex flex-row justify-between items-center px-[100px]">
         <h1 className="text-[20px]">
           Probana
         </h1>
