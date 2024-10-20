@@ -84,7 +84,7 @@ function MarketPage({ params, searchParams }) {
         // if (!router.isReady) return; // Ensure router is ready before using it
 
         async function fetchMarketData() {
-            const response = await axios.post("https://subgraph.satsuma-prod.com/97d738dd3352/elliots-team--201737/Probana/version/v0.0.1-new-version/api", `{"query":"{ marketCreateds(first: 500) { question id rules blockTimestamp marketId } marketCloseds(first: 500) { id blockTimestamp marketId } }"}`)
+            const response = await axios.post("https://subgraph.satsuma-prod.com/97d738dd3352/elliots-team--201737/Probana/version/v0.0.1-new-version/api", `{"query":"{ marketCreateds(first: 500) { question id rules blockTimestamp marketId }}"}`)
             // find the market created with the id that matches params.slug
             let found = null
             for (let i = 0; i < response.data.data.marketCreateds.length; i++) {
