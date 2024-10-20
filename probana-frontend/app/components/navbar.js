@@ -87,6 +87,43 @@ function MarketModal({ marketOpen, setMarketOpen }) {
 function DepositModal({ depositOpen, setDepositOpen }) {
   const [depositAmt, setDepositAmt] = useState()
 
+  const contractAddress = "0x7A0aE150F6E03f6B038B673c7B32341496F65f41";
+  const { primaryWallet } = useDynamicContext();
+  const [txnHash, setTxnHash] = useState('');
+
+  if (!primaryWallet || !isEthereumWallet(primaryWallet)) return null;
+
+
+  async function deposit() {
+
+
+    const publicClient = await primaryWallet.getPublicClient();
+    const walletClient = await primaryWallet.getWalletClient();
+
+    // Define the ABI of the contract function you want to call
+    const abi = [
+      "function deposit(uint256 amount) public"
+    ];
+    const iface = new ethers.utils.Interface(abi);
+
+    // Encode the function call
+    const data = iface.encodeFunctionData("deposit", [depositAmt]);
+
+    const transaction = {
+      to: contractAddress,
+      data: data,
+    };
+
+    const hash = await walletClient.sendTransaction(transaction);
+    setTxnHash(hash);
+
+    const receipt = await publicClient.getTransactionReceipt({
+      hash,
+    });
+
+    console.log(receipt);
+  };
+
 
   return (
     <div className="absolute w-full h-full bg-[rgba(0,0,0,0.5)] items-center justify-center flex" onClick={() => { setDepositOpen(false) }}>
@@ -107,6 +144,7 @@ function DepositModal({ depositOpen, setDepositOpen }) {
           className='bg-[#2d9cdc] text-white px-[20px] py-[10px] rounded-md'
           onClick={() => {
             setDepositOpen(false)
+            deposit()
           }}
         >
           Deposit
