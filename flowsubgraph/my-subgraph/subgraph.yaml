@@ -1,0 +1,49 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: Probana
+    network: mainnet
+    source:
+      address: "0xADd787234F5Aeaf810466b1Ec83ad7Cd03EfDB9d"
+      abi: Probana
+      startBlock: 4834440
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Deposit
+        - MarketClosed
+        - MarketCreated
+        - OrderBookUpdated
+        - OrderCancelled
+        - OrderMatched
+        - OrderPlaced
+        - Withdraw
+      abis:
+        - name: Probana
+          file: ./abis/Probana.json
+      eventHandlers:
+        - event: Deposit(indexed address,uint256)
+          handler: handleDeposit
+        - event: MarketClosed(uint256,uint8)
+          handler: handleMarketClosed
+        - event: MarketCreated(uint256,string,string,address,string,string)
+          handler: handleMarketCreated
+        - event: OrderBookUpdated(uint256,uint256[],uint256[])
+          handler: handleOrderBookUpdated
+        - event: OrderCancelled(uint256)
+          handler: handleOrderCancelled
+        - event: OrderMatched(uint256,uint256,uint256,uint256)
+          handler: handleOrderMatched
+        - event: OrderPlaced(uint256,uint256,address,uint8,uint256,uint256)
+          handler: handleOrderPlaced
+        - event: Withdraw(indexed address,uint256)
+          handler: handleWithdraw
+      file: ./src/probana.ts
+
+description: "My Subgraph v1.0.1"  # Increment the version here

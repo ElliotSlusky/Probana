@@ -28,7 +28,9 @@ contract Probana {
         string rules;
         address creator;
         bool isActive;
-        Outcome winningOutcome; // Add this line to store the winning outcome
+        Outcome winningOutcome;
+        string yesLabel; // Add this line for custom Yes label
+        string noLabel;  // Add this line for custom No label
     }
 
     struct Order {
@@ -42,6 +44,8 @@ contract Probana {
 
     uint public nextMarketId;
     uint public nextOrderId;
+    address public resolverAdmin;
+
     mapping(uint => Market) public markets;
     mapping(uint => Order) public orders;
     mapping(uint => uint[]) public marketYesOrders; // Maps market ID to Yes orders
@@ -82,9 +86,15 @@ contract Probana {
 
     constructor(address usdcAddress) {
         usdc = IERC20(usdcAddress);
+        resolverAdmin = msg.sender;
     }
 
-    function createMarket(string memory name, string memory rules) external {
+    function createMarket(
+        string memory name,
+        string memory rules,
+        string memory yesLabel,
+        string memory noLabel
+    ) external {
         uint marketId = nextMarketId++;
         markets[marketId] = Market(
             marketId, 
@@ -92,7 +102,9 @@ contract Probana {
             rules, 
             msg.sender, 
             true, 
-            Outcome.Yes // Default value, can be set to any as it won't be used until market is closed
+            Outcome.Yes, // Default value, can be set to any as it won't be used until market is closed
+            yesLabel,    // Set custom Yes label
+            noLabel      // Set custom No label
         );
         emit MarketCreated(marketId, name, rules, msg.sender);
     }
@@ -100,7 +112,7 @@ contract Probana {
     function closeMarket(uint marketId, Outcome winningOutcome) external {
         Market storage market = markets[marketId];
         require(
-            market.creator == msg.sender,
+            resolverAdmin == msg.sender,
             "Only the market creator can close the market"
         );
         require(market.isActive, "Market is already closed");
@@ -287,5 +299,25 @@ contract Probana {
 
     function getNoOrders(uint marketId) external view returns (uint[] memory) {
         return marketNoOrders[marketId];
+    }
+
+    function getUserOrdersForMarket(address user, uint marketId) external view returns (Order[] memory) {
+        uint count = 0;
+        for (uint i = 0; i < nextOrderId; i++) {
+            if (orders[i].trader == user && orders[i].marketId == marketId) {
+                count++;
+            }
+        }
+
+        Order[] memory userOrders = new Order[](count);
+        uint index = 0;
+        for (uint i = 0; i < nextOrderId; i++) {
+            if (orders[i].trader == user && orders[i].marketId == marketId) {
+                userOrders[index] = orders[i];
+                index++;
+            }
+        }
+
+        return userOrders;
     }
 }

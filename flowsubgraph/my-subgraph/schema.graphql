@@ -1,0 +1,81 @@
+type Deposit @entity(immutable: true) {
+  id: Bytes!
+  user: Bytes! # address
+  amount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type MarketClosed @entity(immutable: true) {
+  id: Bytes!
+  marketId: BigInt! # uint256
+  winningOutcome: Int! # uint8
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type MarketCreated @entity(immutable: true) {
+  id: Bytes!
+  marketId: BigInt! # uint256
+  name: String! # string
+  rules: String! # string
+  creator: Bytes! # address
+  yesLabel: String! # string
+  noLabel: String! # string
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type OrderBookUpdated @entity(immutable: true) {
+  id: Bytes!
+  marketId: BigInt! # uint256
+  yesOrders: [BigInt!]! # uint256[]
+  noOrders: [BigInt!]! # uint256[]
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type OrderCancelled @entity(immutable: true) {
+  id: Bytes!
+  orderId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type OrderMatched @entity(immutable: true) {
+  id: Bytes!
+  marketId: BigInt! # uint256
+  orderId: BigInt! # uint256
+  matchedAmount: BigInt! # uint256
+  price: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type OrderPlaced @entity(immutable: true) {
+  id: Bytes!
+  orderId: BigInt! # uint256
+  marketId: BigInt! # uint256
+  trader: Bytes! # address
+  outcome: Int! # uint8
+  amount: BigInt! # uint256
+  price: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type Withdraw @entity(immutable: true) {
+  id: Bytes!
+  user: Bytes! # address
+  amount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
