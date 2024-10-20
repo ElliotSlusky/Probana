@@ -79,7 +79,7 @@ export default function MarketPagrewe({ params, searchParams }) {
 function MarketPage({ params, searchParams }) {
     const { connector } = useAccount(); // Ensure this is at the top level
 
-    const [price, setPrice] = useState(0.5); // Ensure this is at the top level
+    const [price, setPrice] = useState(50); // Ensure this is at the top level
     const [side, setSide] = useState('Buy');
     const [type, setType] = useState('Yes');
     const [marketData, setMarketData] = useState(null);
@@ -479,92 +479,14 @@ function MarketPage({ params, searchParams }) {
     } : { yesShares: 0, noShares: 0 };
 
 
-    // Function to convert odds to cent format and adjust for "No" type
+    // Function to convert odds to cent format
     const convertOddsToCents = (odds) => {
-        const adjustedOdds = type === 'Yes' ? odds : 1000 - odds;
-        return (adjustedOdds / 10).toFixed(1) + '¢';
-    };
-
-    // // Mock data for the price chart with dark mode-friendly colors
-    // const chartData = {
-    //     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-    //     datasets: [
-    //         {
-    //             label: 'Price',
-    //             data: [0.3, 0.5, 0.4, 0.6, 0.5, price],
-    //             borderColor: '#4FD1C5', // Tailwind's teal-400
-    //             backgroundColor: 'rgba(79, 209, 197, 0.2)', // Semi-transparent teal
-    //             tension: 0.1
-    //         }
-    //     ]
-    // };
-
-    // Chart options with dark mode considerations
-    const chartOptions = {
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                labels: {
-                    color: 'currentColor', // Adapts to text color
-                }
-            },
-            title: {
-                display: false,
-                text: 'Price Chart',
-                color: 'currentColor',
-            },
-            tooltip: {
-                mode: 'index',
-                intersect: false,
-                callbacks: {
-                    label: function (context) {
-                        return `${context.dataset.label}: ${context.parsed.y}%`;
-                    }
-                }
-            }
-        },
-        scales: {
-            x: {
-                ticks: {
-                    color: 'white', // Set tick mark color to white
-                },
-                grid: {
-                    color: 'rgba(255, 255, 255, 0.1)',
-                }
-            },
-            y: {
-                ticks: {
-                    color: 'white', // Set tick mark color to white
-                },
-                grid: {
-                    color: 'rgba(255, 255, 255, 0.1)',
-                }
-            }
-        },
-        interaction: {
-            mode: 'nearest',
-            axis: 'x',
-            intersect: false
-        },
-        color: 'currentColor'
-    };
-
-    // Mock data for the order book
-    const orderBookData = {
-        bids: [
-            { odds: 400, shares: 3351.3, total: '$7,783.63' },
-
-
-        ],
-        asks: [
-            { odds: 500, shares: 3351.3, total: '$7,783.63' },
-
-        ]
+        return (odds / 10).toFixed(1) + '¢';
     };
 
     // Adjust order book data based on type only
-    const adjustedBids = type === 'Yes' ? orderBookData.bids : orderBookData.asks;
-    const adjustedAsks = type === 'Yes' ? orderBookData.asks : orderBookData.bids;
+    const adjustedBids = type === 'Yes' ? orderBook.bids : orderBook.asks;
+    const adjustedAsks = type === 'Yes' ? orderBook.asks : orderBook.bids;
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -635,11 +557,11 @@ function MarketPage({ params, searchParams }) {
 
                     <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded">
                         <OrderbookUI
-                            bids={bids.map(bid => ({
+                            bids={adjustedBids.map(bid => ({
                                 ...bid,
                                 price: convertOddsToCents(bid.odds)
                             }))}
-                            asks={asks.map(ask => ({
+                            asks={adjustedAsks.map(ask => ({
                                 ...ask,
                                 price: convertOddsToCents(ask.odds)
                             }))}
@@ -680,8 +602,15 @@ function MarketPage({ params, searchParams }) {
                             <input value={amount} onChange={(e) => { setAmount(e.target.value) }} type="number" id="amount" className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
                         </div>
                         <div>
-                            <label htmlFor="price" className="block mb-1">Price</label>
-                            <input value={price} onChange={(e) => { setPrice(e.target.value) }} type="number" id="price" className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+                            <label htmlFor="price" className="block mb-1">Price (¢)</label>
+                            <input
+                                value={price}
+                                onChange={(e) => { setPrice(e.target.value) }}
+                                type="number"
+                                id="price"
+                                className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                step="0.1"
+                            />
                         </div>
                         <button type="submit" className="w-full bg-blue-500 dark:bg-blue-700 text-white p-2 rounded hover:bg-blue-600 dark:hover:bg-blue-600">
                             Place Order
@@ -699,4 +628,6 @@ function MarketPage({ params, searchParams }) {
         </div>
     );
 }
+
+
 

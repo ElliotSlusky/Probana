@@ -15,7 +15,19 @@ export default function OrderBook({ asks, bids, tradeType }) {
     // Calculate the spread
     const highestBid = bids.length > 0 ? Math.max(...bids.map(bid => parseFloat(bid.price))) : null;
     const lowestAsk = asks.length > 0 ? Math.min(...asks.map(ask => parseFloat(ask.price))) : null;
-    const spread = highestBid !== null && lowestAsk !== null ? (lowestAsk - highestBid).toFixed(1) + '¢' : 'N/A';
+    const spread = highestBid !== null && lowestAsk !== null ? ((lowestAsk - highestBid) / 100).toFixed(1) + '¢' : 'N/A';
+
+    // Helper function to safely convert price
+    const formatPrice = (price) => {
+        const parsedPrice = parseFloat(price);
+        return isNaN(parsedPrice) ? 'N/A' : (parsedPrice / 100).toFixed(1) + '¢';
+    };
+
+    // Calculate total
+    const calculateTotal = (price, shares) => {
+        const parsedPrice = parseFloat(price);
+        return isNaN(parsedPrice) ? 'N/A' : `$${(parsedPrice * shares / 10000).toFixed(2)}`;
+    };
 
     return (
         <div className="bg-gray-800 p-1 rounded-lg text-white">
@@ -36,9 +48,9 @@ export default function OrderBook({ asks, bids, tradeType }) {
                 >
                     {asks.map((ask, index) => (
                         <div key={index} className="grid grid-cols-3 text-right text-red-500 ">
-                            <div>{ask.price}</div>
+                            <div>{formatPrice(ask.price)}</div>
                             <div>{ask.shares.toLocaleString()}</div>
-                            <div>{ask.total}</div>
+                            <div>{calculateTotal(ask.price, ask.shares)}</div>
                         </div>
                     ))}
                 </div>
@@ -53,9 +65,9 @@ export default function OrderBook({ asks, bids, tradeType }) {
                 >
                     {bids.map((bid, index) => (
                         <div key={index} className="grid grid-cols-3 text-right text-green-500">
-                            <div>{bid.price}</div>
+                            <div>{formatPrice(bid.price)}</div>
                             <div>{bid.shares.toLocaleString()}</div>
-                            <div>{bid.total}</div>
+                            <div>{calculateTotal(bid.price, bid.shares)}</div>
                         </div>
                     ))}
                 </div>

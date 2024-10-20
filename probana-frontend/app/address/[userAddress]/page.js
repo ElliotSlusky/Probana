@@ -99,6 +99,16 @@ export default function UserHoldingsPage(
 
     }, [userAddress]);
 
+    const handleCopyToClipboard = () => {
+        navigator.clipboard.writeText(userAddress);
+        alert('Address copied to clipboard!');
+    };
+
+    const openInExplorer = () => {
+        const explorerUrl = `https://evm.flowscan.io/address/${userAddress}`;
+        window.open(explorerUrl, '_blank');
+    };
+
     return (
         <DynamicContextProvider
             settings={{
@@ -111,7 +121,17 @@ export default function UserHoldingsPage(
                     <DynamicWagmiConnector>
                         <Navbar />
                         <div className="flex flex-col min-h-screen p-8 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-[100px]">
-                            <h1 className="text-3xl font-bold mb-6">User Holdings for {userAddress}</h1>
+                            <div className="flex items-center mb-6">
+                                <h1 className="text-3xl font-bold mr-4">
+                                    User Holdings for {userAddress.slice(0, 6)}...{userAddress.slice(-4)}
+                                </h1>
+                                <button onClick={handleCopyToClipboard} className="mr-4 bg-blue-500 text-white px-4 py-2 rounded">
+                                    Copy Address
+                                </button>
+                                <button onClick={openInExplorer} className="bg-green-500 text-white px-4 py-2 rounded">
+                                    View on Explorer
+                                </button>
+                            </div>
 
                             <div className="mb-6 bg-gray-100 dark:bg-gray-800 p-4 rounded">
                                 <h2 className="text-xl font-semibold mb-2">USDC Balance</h2>
