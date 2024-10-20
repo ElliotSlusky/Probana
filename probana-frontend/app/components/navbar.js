@@ -16,7 +16,7 @@ function MarketModal({ marketOpen, setMarketOpen }) {
   const [prompt, setPrompt] = useState(null)
   const [rules, setRules] = useState(null)
 
-  const contractAddress = "0x7A0aE150F6E03f6B038B673c7B32341496F65f41";
+  const contractAddress = "0x83FdcE89CA94d141fd1a6dCc62a91f93E2c0C51e";
   // const spenderAddress = "0x7A0aE150F6E03f6B038B673c7B32341496F65f41";
   const amount = ethers.utils.parseUnits("1.0", 18); // Convert 1.0 ETH to wei
   const { primaryWallet } = useDynamicContext();
@@ -87,7 +87,7 @@ function DepositModal({ depositOpen, setDepositOpen }) {
   const [depositAmt, setDepositAmt] = useState()
 
 
-  const contractAddress = "0x7A0aE150F6E03f6B038B673c7B32341496F65f41";
+  const contractAddress = "0x83FdcE89CA94d141fd1a6dCc62a91f93E2c0C51e";
   const { primaryWallet } = useDynamicContext();
   const [txnHash, setTxnHash] = useState('');
 
@@ -195,7 +195,7 @@ function OrdersModal({ ordersOpen, setOrdersOpen }) {
 
   async function cancelOrder(marketId, orderId, side, outcome) {
     console.log(marketId, orderId, side, outcome);
-    const contractAddress = "0x7A0aE150F6E03f6B038B673c7B32341496F65f41";
+    const contractAddress = "0x83FdcE89CA94d141fd1a6dCc62a91f93E2c0C51e";
     const abi = [
       "function cancelOrder(uint256 marketId, uint256 orderId, uint8 side, uint8 outcome)"
     ];

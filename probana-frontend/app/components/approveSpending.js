@@ -5,7 +5,7 @@ import { ethers } from 'ethers';
 
 const ApproveSpending = ({ }) => {
     const contractAddress = "0x7f27352D5F83Db87a5A3E00f4B07Cc2138D8ee52";
-    const spenderAddress = "0x7A0aE150F6E03f6B038B673c7B32341496F65f41";
+    const spenderAddress = "0x83FdcE89CA94d141fd1a6dCc62a91f93E2c0C51e";
     const amount = ethers.utils.parseUnits("1.0", 18); // Convert 1.0 ETH to wei
     const { primaryWallet } = useDynamicContext();
     const [txnHash, setTxnHash] = useState('');

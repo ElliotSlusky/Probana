@@ -41,7 +41,7 @@ export default function UserHoldingsPage(
 
         async function fetchUserHoldings() {
             try {
-                const provider = new ethers.providers.JsonRpcProvider("https://flow-mainnet.g.alchemy.com/v2/OkUye1LIb9ghN5Cxw1cEHi0G5wwWPW88");
+                const provider = new ethers.providers.JsonRpcProvider("https://flow-mainnet.g.alchemy.com/v2/9IIgNnkZJvJlBGS8PVJH_4h_6AhE9HiU");
                 const contractABI = [
                     {
                         "inputs": [
@@ -78,7 +78,7 @@ export default function UserHoldingsPage(
                         "type": "function"
                     }
                 ];
-                const contractAddress = '0x7A0aE150F6E03f6B038B673c7B32341496F65f41';
+                const contractAddress = '0x83FdcE89CA94d141fd1a6dCc62a91f93E2c0C51e';
                 const contract = new ethers.Contract(contractAddress, contractABI, provider);
 
                 const userPositions = await contract.getUserPositions(userAddress);
