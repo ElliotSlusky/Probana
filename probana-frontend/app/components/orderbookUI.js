@@ -22,7 +22,8 @@ export default function OrderBook({ asks, bids, type, side }) {
     // Calculate the spread
     const highestBid = bids.length > 0 ? Math.max(...bids.map(bid => parseFloat(bid.price))) : null;
     const lowestAsk = asks.length > 0 ? Math.min(...asks.map(ask => parseFloat(ask.price))) : null;
-    const spread = highestBid !== null && lowestAsk !== null ? ((lowestAsk - highestBid) / 100).toFixed(1) + '¢' : 'N/A';
+
+    const spread = highestBid !== null && lowestAsk !== null ? ((lowestAsk - highestBid) / 10 ** 4).toFixed(1) + '¢' : 'N/A';
 
     // Helper function to safely convert price
     const formatPrice = (price) => {

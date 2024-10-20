@@ -10,6 +10,7 @@ import { isEthereumWallet } from '@dynamic-labs/ethereum';
 import { ethers } from 'ethers';
 import axios from 'axios';
 import UnlimitOverlay from '../../app/components/unlimitOverlay';
+import abiContract from './abi.json';
 
 const SUBGRAPH_ENDPOINT = 'https://subgraph.satsuma-prod.com/97d738dd3352/elliots-team--201737/Probana/version/v0.0.1-new-version/api'; // Replace with your subgraph endpoint
 
@@ -172,21 +173,25 @@ function OrdersModal({ ordersOpen, setOrdersOpen }) {
     setError(null);
 
     try {
-      // const userwalletaddress = await primaryWallet.getWalletClient();
       const userwalletaddress = await primaryWallet.address;
       if (!userwalletaddress) {
         throw new Error("Failed to get wallet address");
       }
 
-      console.log(userwalletaddress);
-      const response = await axios.post(SUBGRAPH_ENDPOINT, { query: `{ orderPlaceds( trader: "${userwalletaddress}" excludeCanceled: true ) { id side outcome price orderId amount marketId } orderCancelleds( trader: "${userwalletaddress}" ) { id orderId  marketId} }` });
+      const contractAddress = "0x83FdcE89CA94d141fd1a6dCc62a91f93E2c0C51e";
+      const abi = [
+        "function getOrders(address user) view returns (Order[])"
+      ];
 
-      // exclude order that are also in orderCancelleds
-      const orderPlaceds = response.data.data.orderPlaceds.filter(order => !response.data.data.orderCancelleds.some(cancelledOrder => cancelledOrder.id === order.id));
+      const provider = new ethers.providers.JsonRpcProvider("https://flow-mainnet.g.alchemy.com/v2/9IIgNnkZJvJlBGS8PVJH_4h_6AhE9HiU");
 
+      const contract = new ethers.Contract(contractAddress, abi, provider);
 
+      // Call the read function
+      const orders = await contract.getUserActiveOrders(userwalletaddress);
 
-      setOrders(response.data.data.orderPlaceds);
+      console.log(orders);
+      setOrders(orders); // Assuming the function returns an array of orders
     } catch (err) {
       setError(err.message);
     } finally {
@@ -285,7 +290,7 @@ export default function Navbar() {
           </h1>
         </Link>
         <div className='flex flex-row gap-[10px] items-center'>
-          <UnlimitOverlay /> 
+          <UnlimitOverlay />
           <button
             className='bg-[#2d9cdc] text-white px-[20px] py-[10px] rounded-md'
             onClick={() => { setDepositOpen(true) }}

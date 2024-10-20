@@ -181,7 +181,7 @@ function MarketPage({ params, searchParams }) {
                     }
                     else {
                         arraybids.push({
-                            price: (1 * 10 ** 6) - parseInt(cataarray[i].price),
+                            price: parseInt(cataarray[i].price),
                             shares: parseInt(cataarray[i].amount) - parseInt(cataarray[i].filled)
                         })
                     }
@@ -222,7 +222,7 @@ function MarketPage({ params, searchParams }) {
                     }
                     else {
                         arrayasks.push({
-                            price: (1 * 10 ** 6) - parseInt(catbarray[i].price),
+                            price: parseInt(catbarray[i].price),
                             shares: parseInt(catbarray[i].amount) - parseInt(catbarray[i].filled)
                         })
                     }
@@ -241,41 +241,49 @@ function MarketPage({ params, searchParams }) {
         }
 
         fetchCatAAndCatB();
+
     }, [params.slug]); // Ensure dependencies are correct
 
     useEffect(() => {
-        async function fetchUserHoldings() {
-            try {
+        if (primaryWallet) {
 
-                console.log("fetching user holdings")
-                const provider = new ethers.providers.JsonRpcProvider("https://flow-mainnet.g.alchemy.com/v2/9IIgNnkZJvJlBGS8PVJH_4h_6AhE9HiU");
+            async function fetchUserHoldings() {
+                try {
 
-                const contractAddress = '0x83FdcE89CA94d141fd1a6dCc62a91f93E2c0C51e';
-                const contract = new ethers.Contract(contractAddress, contractABI, provider);
+                    console.log("fetching user holdings")
+                    const provider = new ethers.providers.JsonRpcProvider("https://flow-mainnet.g.alchemy.com/v2/9IIgNnkZJvJlBGS8PVJH_4h_6AhE9HiU");
 
-                // const { primaryWallet, } = useDynamicContext();
-                const userwalletaddress = await primaryWallet.address;
-                const marketId = parseInt(params.slug);
+                    const contractAddress = '0x83FdcE89CA94d141fd1a6dCc62a91f93E2c0C51e';
+                    const contract = new ethers.Contract(contractAddress, contractABI, provider);
 
-                const yesShareBalance = await contract.yesShares(marketId, userwalletaddress);
-                const noShareBalance = await contract.noShares(marketId, userwalletaddress);
+                    // const { primaryWallet, } = useDynamicContext();
+                    const userwalletaddress = await primaryWallet.address;
+                    console.log("userwalletaddress", userwalletaddress)
+                    const marketId = parseInt(params.slug);
+
+                    const yesShareBalance = await contract.yesShares(marketId, userwalletaddress);
+                    const noShareBalance = await contract.noShares(marketId, userwalletaddress);
 
 
-                console.log("rwekjjrwqrwq", yesShareBalance, noShareBalance)
-                setUserHoldings({
-                    marketIds: [marketId],
-                    yesShareBalances: [yesShareBalance],
-                    noShareBalances: [noShareBalance],
-                    usdcBalance: userHoldings.usdcBalance // Assuming you have a way to get the USDC balance
-                });
+                    console.log("rwekjjrwqrwq", yesShareBalance, noShareBalance)
+                    setUserHoldings({
+                        marketIds: [marketId],
+                        yesShareBalances: [yesShareBalance],
+                        noShareBalances: [noShareBalance],
+                        usdcBalance: userHoldings.usdcBalance // Assuming you have a way to get the USDC balance
+                    });
 
-            } catch (error) {
-                console.error('Error fetching user holdings:', error);
+                } catch (error) {
+                    console.error('Error fetching user holdings:', error);
+                }
             }
-        }
 
-        fetchUserHoldings();
-    }, [params.slug]);
+            fetchUserHoldings();
+        }
+        else {
+            console.log("no primary wallet")
+        }
+    }, [primaryWallet]);
 
 
 
@@ -346,29 +354,44 @@ function MarketPage({ params, searchParams }) {
         placeOrder(); // Call the function to place the order
     }
 
+    // Calculate the buy-ask spread
+    const bestBid = orderBook.bids.length > 0 ? orderBook.bids[0].price : 0;
+    const bestAsk = orderBook.asks.length > 0 ? orderBook.asks[0].price : 0;
+    const spread = bestAsk - bestBid;
+
     return (
         <div className="flex flex-col min-h-screen p-8 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-[100px]">
-            <h1 className="text-3xl font-bold mb-6">{marketData?.name}</h1>
+            <h1 className="text-3xl font-bold mb-6">{marketData?.question}</h1>
 
-            {/* New section to display the rules */}
-            <div className="mb-6 bg-gray-100 dark:bg-gray-800 p-4 rounded">
-                <h2 className="text-xl font-semibold mb-2">Market Rules</h2>
-                <p>{marketData?.rules}</p>
+            <div className="flex flex-row space-x-8 mb-6">
+                {/* Market Rules Section */}
+                <div className="w-2/3 bg-gray-100 dark:bg-gray-800 p-4 rounded">
+                    <h2 className="text-xl font-semibold mb-2">Market Rules</h2>
+                    <p>{marketData?.rules}</p>
+                </div>
+
+                {/* Your Holdings Section */}
+                <div className="w-1/3 bg-gray-100 dark:bg-gray-800 p-4 rounded shadow-md">
+                    <h2 className="text-xl font-semibold mb-4 text-center">Your Holdings for This Market</h2>
+                    <div className="flex justify-between items-center">
+                        <div className="flex flex-col items-center">
+                            <p className="text-lg font-medium">YES Shares</p>
+                            <p className="text-2xl font-bold text-green-500">{specificMarketHoldings.yesShares}</p>
+                        </div>
+                        <div className="flex flex-col items-center">
+                            <p className="text-lg font-medium">NO Shares</p>
+                            <p className="text-2xl font-bold text-red-500">{specificMarketHoldings.noShares}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div className="flex flex-row space-x-8">
                 <div className="w-3/4">
                     <div className="mb-6 bg-gray-100 dark:bg-gray-800 p-4 rounded">
                         <h2 className="text-xl font-semibold mb-2">Current Odds</h2>
-                        <p className="text-2xl">{(price * 100).toFixed(2)}%</p>
+                        <p className="text-2xl">{spread > 0 ? `${spread.toFixed(2) / 10 ** 4}¢` : 'No Spread Available'}</p>
                     </div>
-
-                    {/* <div className="mb-6 bg-gray-100 dark:bg-gray-800 p-4 rounded">
-                        <h2 className="text-xl font-semibold mb-2">Price Chart</h2>
-                        <div className="h-64">
-                            <Line data={chartData} options={chartOptions} />
-                        </div>
-                    </div> */}
 
                     <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded">
                         <OrderbookUI
@@ -426,18 +449,15 @@ function MarketPage({ params, searchParams }) {
                             Place Order
                         </button>
                     </form>
-
-                    {/* New section to display user holdings for the specific market */}
-                    <div className="mt-6">
-                        <h2 className="text-xl font-semibold mb-2">Your Holdings for Market ID: {marketId}</h2>
-                        <p>YES Shares: {specificMarketHoldings.yesShares}</p>
-                        <p>NO Shares: {specificMarketHoldings.noShares}</p>
-                    </div>
                 </div>
             </div>
         </div>
     );
 }
+
+
+
+
 
 
 
