@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "xmtp-agent"
+version = "0.1.0"
+description = "A description of the XMTP agent project"
+authors = ["AndresNinou <ninoandres542@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+aginet = "0.2"
+annotated-types = "0.6.0"
+anyio = "3.7.1"
+certifi = "2023.11.17"
+charset-normalizer = "3.3.2"
+click = "8.1.7"
+fastapi = "0.104.1"
+h11 = "0.14.0"
+idna = "3.6"
+pydantic = "2.5.2"
+pydantic_core = "2.14.5"
+requests = "2.31.0"
+sniffio = "1.3.0"
+starlette = "0.27.0"
+typing_extensions = "4.8.0"
+urllib3 = "2.1.0"
+uvicorn = "0.24.0.post1"
+openai = "1.10.0"
+python-dotenv = "^1.0.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

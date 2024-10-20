@@ -1,23 +1,30 @@
-//app/nba/page.js
-"use client";  // Marks this file as a Client Component
+"use client";
 
 import React, { useState } from "react";
 import { getMomentIDs } from "../../app/components/getNFTs";
+import styles from "./MomentChecker.module.css";
+import { Spinner } from "../../app/components/Spinner"; // Añadir un spinner para feedback visual mientras se cargan datos
 
 function MomentChecker() {
     const [address, setAddress] = useState("");
     const [hasMoments, setHasMoments] = useState(null);
     const [moments, setMoments] = useState([]);
     const [error, setError] = useState(false);
-    const [selectedMoment, setSelectedMoment] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [hoveredMoment, setHoveredMoment] = useState(null);
 
     const handleCheckMoments = async () => {
+        if (address.trim() === "") {
+            setError("Please enter a valid address");
+            return;
+        }
+
+        setLoading(true);
         const result = await getMomentIDs(address);
-        
-        console.log("Retrieved moments and metadata: ", result);  // Log the moments and metadata for debugging
-        
+        setLoading(false);
+
         if (result.error) {
-            setError(true);
+            setError("Error retrieving moments and metadata.");
             setHasMoments(false);
         } else {
             setHasMoments(result.hasMoments);
@@ -26,66 +33,80 @@ function MomentChecker() {
         }
     };
 
-    const handleThumbnailClick = (moment) => {
-        setSelectedMoment(moment);
+    const handleMouseEnter = (moment) => {
+        setHoveredMoment(moment.id);
     };
 
-    const handleCloseVideo = () => {
-        setSelectedMoment(null);
+    const handleMouseLeave = () => {
+        setHoveredMoment(null);
     };
 
     return (
-        <div>
-            <input
-                type="text"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="Enter account address"
-            />
-            <button onClick={handleCheckMoments}>Check Moments</button>
+        <div className={styles.container}>
+            <header className={styles.header}>
+                <h1 className={styles.title}>NBA Top Shot Moment Checker</h1>
+                <p className={styles.subtitle}>Enter your wallet address to check your Moments collection</p>
+            </header>
 
-            {error && <p>Error retrieving moments and metadata.</p>}
+            <div className={styles.inputContainer}>
+                <input
+                    className={styles.input}
+                    type="text"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="Enter account address"
+                />
+                <button
+                    className={styles.button}
+                    onClick={handleCheckMoments}
+                    disabled={loading || !address.trim()}
+                >
+                    {loading ? <Spinner /> : "Check Moments"} {/* Muestra un spinner durante la carga */}
+                </button>
+            </div>
+
+            {error && <p className={styles.error}>{error}</p>}
 
             {hasMoments === null ? null : hasMoments ? (
-                <div>
-                    <p>The account has the following moments:</p>
-                    <ul>
+                <div className={styles.momentsList}>
+                    <h2>Your NBA Top Shot Moments</h2>
+                    <ul className={styles.momentsGrid}>
                         {moments.map((moment) => (
-                            <li key={moment.id}>
-                                <p><strong>Moment ID:</strong> {moment.id}</p>
-                                <p><strong>Metadata:</strong></p>
-                                {moment.metadata ? (
-                                    <div style={{ marginBottom: "20px" }}>
-                                        <img 
-                                            src={moment.metadata.thumbnail} 
-                                            alt={`${moment.metadata.name} thumbnail`} 
-                                            style={{ width: "150px", height: "auto", cursor: "pointer" }}
-                                            onClick={() => handleThumbnailClick(moment)}
+                            <li key={moment.id} className={styles.momentCard}>
+                                <div 
+                                    className={styles.thumbnailWrapper}
+                                    onMouseEnter={() => handleMouseEnter(moment)}
+                                    onMouseLeave={handleMouseLeave}
+                                >
+                                    {hoveredMoment === moment.id ? (
+                                        <video
+                                            className={styles.videoThumbnail}
+                                            autoPlay
+                                            muted
+                                            loop
+                                        >
+                                            <source src={moment.metadata.videoURL} type="video/mp4" />
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    ) : (
+                                        <img
+                                            src={moment.metadata.thumbnail}
+                                            alt={`${moment.metadata.name} thumbnail`}
+                                            className={styles.thumbnail}
                                         />
-                                        <p><strong>Name:</strong> {moment.metadata.name}</p>
-                                        <p><strong>Description:</strong> {moment.metadata.description}</p>
-                                    </div>
-                                ) : (
-                                    <p>No metadata available</p>
-                                )}
+                                    )}
+                                </div>
+                                <div className={styles.momentDetails}>
+                                    <p><strong>Moment ID:</strong> {moment.id}</p>
+                                    <p><strong>Name:</strong> {moment.metadata.name}</p>
+                                    <p><strong>Description:</strong> {moment.metadata.description}</p>
+                                </div>
                             </li>
                         ))}
                     </ul>
                 </div>
             ) : (
-                <p>The account has no moments.</p>
-            )}
-
-            {selectedMoment && (
-                <div className="video-modal" style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0, 0, 0, 0.8)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <div style={{ position: "relative", width: "80%", maxWidth: "800px" }}>
-                        <button onClick={handleCloseVideo} style={{ position: "absolute", top: "10px", right: "10px", background: "white", border: "none", cursor: "pointer" }}>Close</button>
-                        <video controls style={{ width: "100%" }}>
-                            <source src={selectedMoment.metadata.videoURL} type="video/mp4" />
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                </div>
+                <p>No moments found for this account.</p>
             )}
         </div>
     );
