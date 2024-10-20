@@ -3,7 +3,7 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "usdcAddress",
+                "name": "_usdcAddress",
                 "type": "address"
             }
         ],
@@ -40,51 +40,14 @@
             },
             {
                 "indexed": false,
-                "internalType": "enum Probana.Outcome",
-                "name": "winningOutcome",
-                "type": "uint8"
-            }
-        ],
-        "name": "MarketClosed",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "marketId",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
                 "internalType": "string",
-                "name": "name",
+                "name": "question",
                 "type": "string"
             },
             {
                 "indexed": false,
                 "internalType": "string",
                 "name": "rules",
-                "type": "string"
-            },
-            {
-                "indexed": false,
-                "internalType": "address",
-                "name": "creator",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "string",
-                "name": "yesLabel",
-                "type": "string"
-            },
-            {
-                "indexed": false,
-                "internalType": "string",
-                "name": "noLabel",
                 "type": "string"
             }
         ],
@@ -102,18 +65,12 @@
             },
             {
                 "indexed": false,
-                "internalType": "uint256[]",
-                "name": "yesOrders",
-                "type": "uint256[]"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256[]",
-                "name": "noOrders",
-                "type": "uint256[]"
+                "internalType": "enum Probana.Outcome",
+                "name": "winningOutcome",
+                "type": "uint8"
             }
         ],
-        "name": "OrderBookUpdated",
+        "name": "MarketResolved",
         "type": "event"
     },
     {
@@ -141,19 +98,19 @@
             {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "orderId",
+                "name": "orderId1",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "orderId2",
                 "type": "uint256"
             },
             {
                 "indexed": false,
                 "internalType": "uint256",
                 "name": "matchedAmount",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "price",
                 "type": "uint256"
             }
         ],
@@ -180,6 +137,12 @@
                 "internalType": "address",
                 "name": "trader",
                 "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "enum Probana.Side",
+                "name": "side",
+                "type": "uint8"
             },
             {
                 "indexed": false,
@@ -221,17 +184,11 @@
             {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "sharesMerged",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "payout",
+                "name": "amount",
                 "type": "uint256"
             }
         ],
-        "name": "SharesMerged",
+        "name": "WinningsClaimed",
         "type": "event"
     },
     {
@@ -250,7 +207,7 @@
                 "type": "uint256"
             }
         ],
-        "name": "Withdraw",
+        "name": "Withdrawal",
         "type": "event"
     },
     {
@@ -276,8 +233,23 @@
         "inputs": [
             {
                 "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
                 "name": "orderId",
                 "type": "uint256"
+            },
+            {
+                "internalType": "enum Probana.Side",
+                "name": "side",
+                "type": "uint8"
+            },
+            {
+                "internalType": "enum Probana.Outcome",
+                "name": "outcome",
+                "type": "uint8"
             }
         ],
         "name": "cancelOrder",
@@ -291,14 +263,9 @@
                 "internalType": "uint256",
                 "name": "marketId",
                 "type": "uint256"
-            },
-            {
-                "internalType": "enum Probana.Outcome",
-                "name": "winningOutcome",
-                "type": "uint8"
             }
         ],
-        "name": "closeMarket",
+        "name": "claimWinnings",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -307,22 +274,12 @@
         "inputs": [
             {
                 "internalType": "string",
-                "name": "name",
+                "name": "question",
                 "type": "string"
             },
             {
                 "internalType": "string",
                 "name": "rules",
-                "type": "string"
-            },
-            {
-                "internalType": "string",
-                "name": "yesLabel",
-                "type": "string"
-            },
-            {
-                "internalType": "string",
-                "name": "noLabel",
                 "type": "string"
             }
         ],
@@ -352,87 +309,7 @@
                 "type": "uint256"
             }
         ],
-        "name": "getMarket",
-        "outputs": [
-            {
-                "components": [
-                    {
-                        "internalType": "uint256",
-                        "name": "id",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "string",
-                        "name": "name",
-                        "type": "string"
-                    },
-                    {
-                        "internalType": "string",
-                        "name": "rules",
-                        "type": "string"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "creator",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "isActive",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "enum Probana.Outcome",
-                        "name": "winningOutcome",
-                        "type": "uint8"
-                    },
-                    {
-                        "internalType": "string",
-                        "name": "yesLabel",
-                        "type": "string"
-                    },
-                    {
-                        "internalType": "string",
-                        "name": "noLabel",
-                        "type": "string"
-                    }
-                ],
-                "internalType": "struct Probana.Market",
-                "name": "",
-                "type": "tuple"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "marketId",
-                "type": "uint256"
-            }
-        ],
-        "name": "getNoOrders",
-        "outputs": [
-            {
-                "internalType": "uint256[]",
-                "name": "",
-                "type": "uint256[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "orderId",
-                "type": "uint256"
-            }
-        ],
-        "name": "getOrder",
+        "name": "getOrderBookCata",
         "outputs": [
             {
                 "components": [
@@ -452,60 +329,9 @@
                         "type": "address"
                     },
                     {
-                        "internalType": "enum Probana.Outcome",
-                        "name": "outcome",
+                        "internalType": "enum Probana.Side",
+                        "name": "side",
                         "type": "uint8"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "price",
-                        "type": "uint256"
-                    }
-                ],
-                "internalType": "struct Probana.Order",
-                "name": "",
-                "type": "tuple"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "user",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "marketId",
-                "type": "uint256"
-            }
-        ],
-        "name": "getUserOrdersForMarket",
-        "outputs": [
-            {
-                "components": [
-                    {
-                        "internalType": "uint256",
-                        "name": "id",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "marketId",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "trader",
-                        "type": "address"
                     },
                     {
                         "internalType": "enum Probana.Outcome",
@@ -520,11 +346,63 @@
                     {
                         "internalType": "uint256",
                         "name": "price",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "filled",
                         "type": "uint256"
                     }
                 ],
                 "internalType": "struct Probana.Order[]",
-                "name": "",
+                "name": "yesBuys",
+                "type": "tuple[]"
+            },
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "id",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "marketId",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "trader",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "enum Probana.Side",
+                        "name": "side",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "enum Probana.Outcome",
+                        "name": "outcome",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "price",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "filled",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct Probana.Order[]",
+                "name": "noSells",
                 "type": "tuple[]"
             }
         ],
@@ -539,59 +417,134 @@
                 "type": "uint256"
             }
         ],
-        "name": "getYesOrders",
+        "name": "getOrderBookCatb",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "id",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "marketId",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "trader",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "enum Probana.Side",
+                        "name": "side",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "enum Probana.Outcome",
+                        "name": "outcome",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "price",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "filled",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct Probana.Order[]",
+                "name": "yesSells",
+                "type": "tuple[]"
+            },
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "id",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "marketId",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "trader",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "enum Probana.Side",
+                        "name": "side",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "enum Probana.Outcome",
+                        "name": "outcome",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "price",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "filled",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct Probana.Order[]",
+                "name": "noBuys",
+                "type": "tuple[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            }
+        ],
+        "name": "getUserPositions",
         "outputs": [
             {
                 "internalType": "uint256[]",
-                "name": "",
+                "name": "marketIds",
                 "type": "uint256[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
+            },
             {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
+                "internalType": "uint256[]",
+                "name": "yesShareBalances",
+                "type": "uint256[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "noShareBalances",
+                "type": "uint256[]"
             },
             {
                 "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "marketNoOrders",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "marketYesOrders",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
+                "name": "usdcBalance",
                 "type": "uint256"
             }
         ],
@@ -615,18 +568,13 @@
             },
             {
                 "internalType": "string",
-                "name": "name",
+                "name": "question",
                 "type": "string"
             },
             {
                 "internalType": "string",
                 "name": "rules",
                 "type": "string"
-            },
-            {
-                "internalType": "address",
-                "name": "creator",
-                "type": "address"
             },
             {
                 "internalType": "bool",
@@ -637,32 +585,9 @@
                 "internalType": "enum Probana.Outcome",
                 "name": "winningOutcome",
                 "type": "uint8"
-            },
-            {
-                "internalType": "string",
-                "name": "yesLabel",
-                "type": "string"
-            },
-            {
-                "internalType": "string",
-                "name": "noLabel",
-                "type": "string"
             }
         ],
         "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "marketId",
-                "type": "uint256"
-            }
-        ],
-        "name": "mergeShares",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
     },
     {
@@ -721,9 +646,24 @@
                 "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
+            },
+            {
+                "internalType": "enum Probana.Side",
+                "name": "",
+                "type": "uint8"
+            },
+            {
+                "internalType": "enum Probana.Outcome",
+                "name": "",
+                "type": "uint8"
+            },
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
             }
         ],
-        "name": "orders",
+        "name": "orderBook",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -741,6 +681,11 @@
                 "type": "address"
             },
             {
+                "internalType": "enum Probana.Side",
+                "name": "side",
+                "type": "uint8"
+            },
+            {
                 "internalType": "enum Probana.Outcome",
                 "name": "outcome",
                 "type": "uint8"
@@ -754,6 +699,24 @@
                 "internalType": "uint256",
                 "name": "price",
                 "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "filled",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
             }
         ],
         "stateMutability": "view",
@@ -765,6 +728,11 @@
                 "internalType": "uint256",
                 "name": "marketId",
                 "type": "uint256"
+            },
+            {
+                "internalType": "enum Probana.Side",
+                "name": "side",
+                "type": "uint8"
             },
             {
                 "internalType": "enum Probana.Outcome",
@@ -788,16 +756,21 @@
         "type": "function"
     },
     {
-        "inputs": [],
-        "name": "resolverAdmin",
-        "outputs": [
+        "inputs": [
             {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
+                "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "enum Probana.Outcome",
+                "name": "winningOutcome",
+                "type": "uint8"
             }
         ],
-        "stateMutability": "view",
+        "name": "resolveMarket",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
     },
     {

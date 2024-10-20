@@ -1,8 +1,8 @@
 {
   "mainnet": {
     "Probana": {
-      "address": "0x13cC2FEb33639347aa8BFD3045275f1b88F18e6D",
-      "startBlock": 4842668
+      "address": "0x7A0aE150F6E03f6B038B673c7B32341496F65f41",
+      "startBlock": 4852343
     }
   }
 }
