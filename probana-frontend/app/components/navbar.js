@@ -12,7 +12,7 @@ function Modal ({modalOpen, setModalOpen}) {
 
   return (
     <div className="absolute w-full h-full bg-[rgba(0,0,0,0.5)] items-center justify-center flex" onClick={() => {setModalOpen(false)}}>
-      <div className="flex-col flex gap-[10px] items-center bg-[#1d2b39] w-min p-[50px] rounded-lg" onClick={(e) => {e.stopPropagation}}>
+      <div className="flex-col flex gap-[10px] items-center bg-[#1d2b39] w-min p-[50px] rounded-lg" onClick={(e) => {e.stopPropagation()}}>
           {/* <Navbar/> */}
           <h3 className='text-[24px] font-bold'>
               Create Market
