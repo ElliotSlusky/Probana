@@ -4,7 +4,7 @@ import {
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import ApproveSpending from './approveSpending';
-
+import { IoMdClose } from 'react-icons/io';
 // import { useState } from 'react';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { isEthereumWallet } from '@dynamic-labs/ethereum';
@@ -13,7 +13,7 @@ import { ethers } from 'ethers';
 
 
 
-function Modal({ modalOpen, setModalOpen }) {
+function MarketModal({ marketOpen, setMarketOpen }) {
   const [prompt, setPrompt] = useState(null)
   const [rules, setRules] = useState(null)
 
@@ -56,7 +56,7 @@ function Modal({ modalOpen, setModalOpen }) {
   };
 
   return (
-    <div className="absolute w-full h-full bg-[rgba(0,0,0,0.5)] items-center justify-center flex" onClick={() => { setModalOpen(false) }}>
+    <div className="absolute w-full h-full bg-[rgba(0,0,0,0.5)] items-center justify-center flex" onClick={() => { setMarketOpen(false) }}>
       <div className="flex-col flex gap-[10px] items-center bg-[#1d2b39] w-min p-[50px] rounded-lg" onClick={(e) => { e.stopPropagation() }}>
         {/* <Navbar/> */}
         <h3 className='text-[24px] font-bold'>
@@ -74,7 +74,7 @@ function Modal({ modalOpen, setModalOpen }) {
           className='bg-[#2d9cdc] text-white px-[20px] py-[10px] rounded-md'
           onClick={() => {
             createMarket()
-            setModalOpen(false)
+            setMarketOpen(false)
           }}
         >
           Create Market
@@ -84,8 +84,41 @@ function Modal({ modalOpen, setModalOpen }) {
   )
 }
 
+function DepositModal({ depositOpen, setDepositOpen }) {
+  return (
+    <div className="absolute w-full h-full bg-[rgba(0,0,0,0.5)] items-center justify-center flex" onClick={() => { setDepositOpen(false) }}>
+      <div className="flex-col flex gap-[10px] items-center bg-[#1d2b39] w-min p-[50px] rounded-lg" onClick={(e) => { e.stopPropagation() }}>
+        <div className='flex flex-row justify-between w-full'>
+          <h3 className='text-[24px] font-bold'>
+            Deposit Money
+          </h3>
+          <IoMdClose/>
+        </div>
+        {/* <div className="bg-[#1d2b39] rounded-md px-[15px] py-[10px] w-min border-[1px] border-[rgba(255,255,255,0.5)] border-solid h-min">
+          <input value={prompt} onChange={(e) => { setPrompt(e.target.value) }} type="text" placeholder="Prompt" className="bg-transparent outline-none" />
+        </div>
+
+        <div className="bg-[#1d2b39] rounded-md px-[15px] py-[10px] w-min border-[1px] border-[rgba(255,255,255,0.5)] border-solid h-min">
+          <input value={rules} onChange={(e) => { setRules(e.target.value) }} type="text" placeholder="Rules" className="bg-transparent outline-none" />
+        </div> */}
+
+        <button 
+          className='bg-[#2d9cdc] text-white px-[20px] py-[10px] rounded-md'
+          onClick={() => {
+            setDepositOpen(false)
+          }}
+        >
+          Deposit
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export default function Navbar() {
-  const [modalOpen, setModalOpen] = useState(false);
+  const [marketOpen, setMarketOpen] = useState(false);
+  const [depositOpen, setDepositOpen] = useState(false);
+
   const [transactionDetails, setTransactionDetails] = useState({
     contractAddress: "0x0000000000000000000000000000000000000000",
     spenderAddress: "0x0000000000000000000000000000000000000000",
@@ -94,7 +127,9 @@ export default function Navbar() {
 
   return (
     <div className="flex flex-col items-center">
-      {modalOpen && <Modal modalOpen={modalOpen} setModalOpen={setModalOpen} />}
+      {marketOpen && <MarketModal marketOpen={marketOpen} setMarketOpen={setMarketOpen} />}
+      {depositOpen && <DepositModal depositOpen={depositOpen} setDepositOpen={setDepositOpen} />}
+
       <div className="text-white w-full h-[100px] flex flex-row justify-between items-center px-[100px]">
         <Link href="/">
           <h1 className="text-[20px] font-bold">
@@ -102,6 +137,12 @@ export default function Navbar() {
           </h1>
         </Link>
         <div className='flex flex-row gap-[10px] items-center'>
+          <button
+            className='bg-[#2d9cdc] text-white px-[20px] py-[10px] rounded-md'
+            onClick={() => { setDepositOpen(true) }}
+          >
+            Deposit Money
+          </button>
           <ApproveSpending
             contractAddress={transactionDetails.contractAddress}
             spenderAddress={transactionDetails.spenderAddress}
@@ -109,7 +150,7 @@ export default function Navbar() {
           />
           <button
             className='bg-[#2d9cdc] text-white px-[20px] py-[10px] rounded-md'
-            onClick={() => { setModalOpen(true) }}
+            onClick={() => { setMarketOpen(true) }}
           >
             Create Market
           </button>
