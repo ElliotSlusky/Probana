@@ -8,43 +8,40 @@ dataSources:
     name: Probana
     network: flow-mainnet
     source:
-      address: "0x13cC2FEb33639347aa8BFD3045275f1b88F18e6D"
+      address: "0x7A0aE150F6E03f6B038B673c7B32341496F65f41"
       abi: Probana
-      startBlock: 4842668
+      startBlock: 4852343
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - Deposit
-        - MarketClosed
         - MarketCreated
-        - OrderBookUpdated
+        - MarketResolved
         - OrderCancelled
         - OrderMatched
         - OrderPlaced
-        - SharesMerged
-        - Withdraw
+        - WinningsClaimed
+        - Withdrawal
       abis:
         - name: Probana
           file: ./abis/Probana.json
       eventHandlers:
         - event: Deposit(indexed address,uint256)
           handler: handleDeposit
-        - event: MarketClosed(uint256,uint8)
-          handler: handleMarketClosed
-        - event: MarketCreated(uint256,string,string,address,string,string)
+        - event: MarketCreated(uint256,string,string)
           handler: handleMarketCreated
-        - event: OrderBookUpdated(uint256,uint256[],uint256[])
-          handler: handleOrderBookUpdated
+        - event: MarketResolved(uint256,uint8)
+          handler: handleMarketResolved
         - event: OrderCancelled(uint256)
           handler: handleOrderCancelled
         - event: OrderMatched(uint256,uint256,uint256,uint256)
           handler: handleOrderMatched
-        - event: OrderPlaced(uint256,uint256,address,uint8,uint256,uint256)
+        - event: OrderPlaced(uint256,uint256,address,uint8,uint8,uint256,uint256)
           handler: handleOrderPlaced
-        - event: SharesMerged(uint256,indexed address,uint256,uint256)
-          handler: handleSharesMerged
-        - event: Withdraw(indexed address,uint256)
-          handler: handleWithdraw
+        - event: WinningsClaimed(uint256,indexed address,uint256)
+          handler: handleWinningsClaimed
+        - event: Withdrawal(indexed address,uint256)
+          handler: handleWithdrawal
       file: ./src/probana.ts

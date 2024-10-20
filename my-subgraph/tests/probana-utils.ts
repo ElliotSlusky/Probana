@@ -2,14 +2,13 @@ import { newMockEvent } from "matchstick-as"
 import { ethereum, Address, BigInt } from "@graphprotocol/graph-ts"
 import {
   Deposit,
-  MarketClosed,
   MarketCreated,
-  OrderBookUpdated,
+  MarketResolved,
   OrderCancelled,
   OrderMatched,
   OrderPlaced,
-  SharesMerged,
-  Withdraw
+  WinningsClaimed,
+  Withdrawal
 } from "../generated/Probana/Probana"
 
 export function createDepositEvent(user: Address, amount: BigInt): Deposit {
@@ -27,37 +26,10 @@ export function createDepositEvent(user: Address, amount: BigInt): Deposit {
   return depositEvent
 }
 
-export function createMarketClosedEvent(
-  marketId: BigInt,
-  winningOutcome: i32
-): MarketClosed {
-  let marketClosedEvent = changetype<MarketClosed>(newMockEvent())
-
-  marketClosedEvent.parameters = new Array()
-
-  marketClosedEvent.parameters.push(
-    new ethereum.EventParam(
-      "marketId",
-      ethereum.Value.fromUnsignedBigInt(marketId)
-    )
-  )
-  marketClosedEvent.parameters.push(
-    new ethereum.EventParam(
-      "winningOutcome",
-      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(winningOutcome))
-    )
-  )
-
-  return marketClosedEvent
-}
-
 export function createMarketCreatedEvent(
   marketId: BigInt,
-  name: string,
-  rules: string,
-  creator: Address,
-  yesLabel: string,
-  noLabel: string
+  question: string,
+  rules: string
 ): MarketCreated {
   let marketCreatedEvent = changetype<MarketCreated>(newMockEvent())
 
@@ -70,53 +42,37 @@ export function createMarketCreatedEvent(
     )
   )
   marketCreatedEvent.parameters.push(
-    new ethereum.EventParam("name", ethereum.Value.fromString(name))
+    new ethereum.EventParam("question", ethereum.Value.fromString(question))
   )
   marketCreatedEvent.parameters.push(
     new ethereum.EventParam("rules", ethereum.Value.fromString(rules))
-  )
-  marketCreatedEvent.parameters.push(
-    new ethereum.EventParam("creator", ethereum.Value.fromAddress(creator))
-  )
-  marketCreatedEvent.parameters.push(
-    new ethereum.EventParam("yesLabel", ethereum.Value.fromString(yesLabel))
-  )
-  marketCreatedEvent.parameters.push(
-    new ethereum.EventParam("noLabel", ethereum.Value.fromString(noLabel))
   )
 
   return marketCreatedEvent
 }
 
-export function createOrderBookUpdatedEvent(
+export function createMarketResolvedEvent(
   marketId: BigInt,
-  yesOrders: Array<BigInt>,
-  noOrders: Array<BigInt>
-): OrderBookUpdated {
-  let orderBookUpdatedEvent = changetype<OrderBookUpdated>(newMockEvent())
+  winningOutcome: i32
+): MarketResolved {
+  let marketResolvedEvent = changetype<MarketResolved>(newMockEvent())
 
-  orderBookUpdatedEvent.parameters = new Array()
+  marketResolvedEvent.parameters = new Array()
 
-  orderBookUpdatedEvent.parameters.push(
+  marketResolvedEvent.parameters.push(
     new ethereum.EventParam(
       "marketId",
       ethereum.Value.fromUnsignedBigInt(marketId)
     )
   )
-  orderBookUpdatedEvent.parameters.push(
+  marketResolvedEvent.parameters.push(
     new ethereum.EventParam(
-      "yesOrders",
-      ethereum.Value.fromUnsignedBigIntArray(yesOrders)
-    )
-  )
-  orderBookUpdatedEvent.parameters.push(
-    new ethereum.EventParam(
-      "noOrders",
-      ethereum.Value.fromUnsignedBigIntArray(noOrders)
+      "winningOutcome",
+      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(winningOutcome))
     )
   )
 
-  return orderBookUpdatedEvent
+  return marketResolvedEvent
 }
 
 export function createOrderCancelledEvent(orderId: BigInt): OrderCancelled {
@@ -136,9 +92,9 @@ export function createOrderCancelledEvent(orderId: BigInt): OrderCancelled {
 
 export function createOrderMatchedEvent(
   marketId: BigInt,
-  orderId: BigInt,
-  matchedAmount: BigInt,
-  price: BigInt
+  orderId1: BigInt,
+  orderId2: BigInt,
+  matchedAmount: BigInt
 ): OrderMatched {
   let orderMatchedEvent = changetype<OrderMatched>(newMockEvent())
 
@@ -152,8 +108,14 @@ export function createOrderMatchedEvent(
   )
   orderMatchedEvent.parameters.push(
     new ethereum.EventParam(
-      "orderId",
-      ethereum.Value.fromUnsignedBigInt(orderId)
+      "orderId1",
+      ethereum.Value.fromUnsignedBigInt(orderId1)
+    )
+  )
+  orderMatchedEvent.parameters.push(
+    new ethereum.EventParam(
+      "orderId2",
+      ethereum.Value.fromUnsignedBigInt(orderId2)
     )
   )
   orderMatchedEvent.parameters.push(
@@ -161,9 +123,6 @@ export function createOrderMatchedEvent(
       "matchedAmount",
       ethereum.Value.fromUnsignedBigInt(matchedAmount)
     )
-  )
-  orderMatchedEvent.parameters.push(
-    new ethereum.EventParam("price", ethereum.Value.fromUnsignedBigInt(price))
   )
 
   return orderMatchedEvent
@@ -173,6 +132,7 @@ export function createOrderPlacedEvent(
   orderId: BigInt,
   marketId: BigInt,
   trader: Address,
+  side: i32,
   outcome: i32,
   amount: BigInt,
   price: BigInt
@@ -198,6 +158,12 @@ export function createOrderPlacedEvent(
   )
   orderPlacedEvent.parameters.push(
     new ethereum.EventParam(
+      "side",
+      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(side))
+    )
+  )
+  orderPlacedEvent.parameters.push(
+    new ethereum.EventParam(
       "outcome",
       ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(outcome))
     )
@@ -212,49 +178,45 @@ export function createOrderPlacedEvent(
   return orderPlacedEvent
 }
 
-export function createSharesMergedEvent(
+export function createWinningsClaimedEvent(
   marketId: BigInt,
   user: Address,
-  sharesMerged: BigInt,
-  payout: BigInt
-): SharesMerged {
-  let sharesMergedEvent = changetype<SharesMerged>(newMockEvent())
+  amount: BigInt
+): WinningsClaimed {
+  let winningsClaimedEvent = changetype<WinningsClaimed>(newMockEvent())
 
-  sharesMergedEvent.parameters = new Array()
+  winningsClaimedEvent.parameters = new Array()
 
-  sharesMergedEvent.parameters.push(
+  winningsClaimedEvent.parameters.push(
     new ethereum.EventParam(
       "marketId",
       ethereum.Value.fromUnsignedBigInt(marketId)
     )
   )
-  sharesMergedEvent.parameters.push(
+  winningsClaimedEvent.parameters.push(
     new ethereum.EventParam("user", ethereum.Value.fromAddress(user))
   )
-  sharesMergedEvent.parameters.push(
-    new ethereum.EventParam(
-      "sharesMerged",
-      ethereum.Value.fromUnsignedBigInt(sharesMerged)
-    )
-  )
-  sharesMergedEvent.parameters.push(
-    new ethereum.EventParam("payout", ethereum.Value.fromUnsignedBigInt(payout))
-  )
-
-  return sharesMergedEvent
-}
-
-export function createWithdrawEvent(user: Address, amount: BigInt): Withdraw {
-  let withdrawEvent = changetype<Withdraw>(newMockEvent())
-
-  withdrawEvent.parameters = new Array()
-
-  withdrawEvent.parameters.push(
-    new ethereum.EventParam("user", ethereum.Value.fromAddress(user))
-  )
-  withdrawEvent.parameters.push(
+  winningsClaimedEvent.parameters.push(
     new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount))
   )
 
-  return withdrawEvent
+  return winningsClaimedEvent
+}
+
+export function createWithdrawalEvent(
+  user: Address,
+  amount: BigInt
+): Withdrawal {
+  let withdrawalEvent = changetype<Withdrawal>(newMockEvent())
+
+  withdrawalEvent.parameters = new Array()
+
+  withdrawalEvent.parameters.push(
+    new ethereum.EventParam("user", ethereum.Value.fromAddress(user))
+  )
+  withdrawalEvent.parameters.push(
+    new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount))
+  )
+
+  return withdrawalEvent
 }

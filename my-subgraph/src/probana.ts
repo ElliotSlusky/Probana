@@ -1,24 +1,22 @@
 import {
   Deposit as DepositEvent,
-  MarketClosed as MarketClosedEvent,
   MarketCreated as MarketCreatedEvent,
-  OrderBookUpdated as OrderBookUpdatedEvent,
+  MarketResolved as MarketResolvedEvent,
   OrderCancelled as OrderCancelledEvent,
   OrderMatched as OrderMatchedEvent,
   OrderPlaced as OrderPlacedEvent,
-  SharesMerged as SharesMergedEvent,
-  Withdraw as WithdrawEvent
+  WinningsClaimed as WinningsClaimedEvent,
+  Withdrawal as WithdrawalEvent
 } from "../generated/Probana/Probana"
 import {
   Deposit,
-  MarketClosed,
   MarketCreated,
-  OrderBookUpdated,
+  MarketResolved,
   OrderCancelled,
   OrderMatched,
   OrderPlaced,
-  SharesMerged,
-  Withdraw
+  WinningsClaimed,
+  Withdrawal
 } from "../generated/schema"
 
 export function handleDeposit(event: DepositEvent): void {
@@ -35,30 +33,13 @@ export function handleDeposit(event: DepositEvent): void {
   entity.save()
 }
 
-export function handleMarketClosed(event: MarketClosedEvent): void {
-  let entity = new MarketClosed(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.marketId = event.params.marketId
-  entity.winningOutcome = event.params.winningOutcome
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
 export function handleMarketCreated(event: MarketCreatedEvent): void {
   let entity = new MarketCreated(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.marketId = event.params.marketId
-  entity.name = event.params.name
+  entity.question = event.params.question
   entity.rules = event.params.rules
-  entity.creator = event.params.creator
-  entity.yesLabel = event.params.yesLabel
-  entity.noLabel = event.params.noLabel
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
@@ -67,13 +48,12 @@ export function handleMarketCreated(event: MarketCreatedEvent): void {
   entity.save()
 }
 
-export function handleOrderBookUpdated(event: OrderBookUpdatedEvent): void {
-  let entity = new OrderBookUpdated(
+export function handleMarketResolved(event: MarketResolvedEvent): void {
+  let entity = new MarketResolved(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.marketId = event.params.marketId
-  entity.yesOrders = event.params.yesOrders
-  entity.noOrders = event.params.noOrders
+  entity.winningOutcome = event.params.winningOutcome
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
@@ -100,9 +80,9 @@ export function handleOrderMatched(event: OrderMatchedEvent): void {
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.marketId = event.params.marketId
-  entity.orderId = event.params.orderId
+  entity.orderId1 = event.params.orderId1
+  entity.orderId2 = event.params.orderId2
   entity.matchedAmount = event.params.matchedAmount
-  entity.price = event.params.price
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
@@ -118,6 +98,7 @@ export function handleOrderPlaced(event: OrderPlacedEvent): void {
   entity.orderId = event.params.orderId
   entity.marketId = event.params.marketId
   entity.trader = event.params.trader
+  entity.side = event.params.side
   entity.outcome = event.params.outcome
   entity.amount = event.params.amount
   entity.price = event.params.price
@@ -129,14 +110,13 @@ export function handleOrderPlaced(event: OrderPlacedEvent): void {
   entity.save()
 }
 
-export function handleSharesMerged(event: SharesMergedEvent): void {
-  let entity = new SharesMerged(
+export function handleWinningsClaimed(event: WinningsClaimedEvent): void {
+  let entity = new WinningsClaimed(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.marketId = event.params.marketId
   entity.user = event.params.user
-  entity.sharesMerged = event.params.sharesMerged
-  entity.payout = event.params.payout
+  entity.amount = event.params.amount
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
@@ -145,8 +125,8 @@ export function handleSharesMerged(event: SharesMergedEvent): void {
   entity.save()
 }
 
-export function handleWithdraw(event: WithdrawEvent): void {
-  let entity = new Withdraw(
+export function handleWithdrawal(event: WithdrawalEvent): void {
+  let entity = new Withdrawal(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.user = event.params.user
