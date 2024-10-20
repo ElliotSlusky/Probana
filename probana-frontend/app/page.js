@@ -28,8 +28,6 @@ const config = createConfig({
 const queryClient = new QueryClient();
 
 
-
-
 export default function App() {
 
   return (
