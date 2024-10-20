@@ -33,17 +33,33 @@ function Modal ({modalOpen, setModalOpen}) {
 
 export default function Navbar() {
   const [modalOpen, setModalOpen] = useState(false)
+  const [deposit, setDeposit] = useState(null)
 
   return (
     <div className="flex flex-col items-center">
       {modalOpen && <Modal modalOpen={modalOpen} setModalOpen={setModalOpen}/>}
-      <div className="text-white w-full h-[100px] flex flex-row justify-between items-center px-[100px]">
+      <div className="text-white w-full h-[100px] flex flex-row justify-between items-center px-[100px] gap-[20px]">
         <Link href="/">
           <h1 className="text-[20px] font-bold">
             PROBANA
           </h1>
         </Link>
-        <div className='flex flex-row gap-[10px] items-center'>
+        <div className="bg-[#1d2b39] rounded-md px-[15px] py-[10px] w-min border-[1px] border-[rgba(255,255,255,0.5)] border-solid h-min flex flex-row grow">
+          $ <input value={deposit} onChange={(e) => {setDeposit(e.target.value)}} type="number" placeholder="0.00" className="bg-transparent outline-none w-full"/>
+        </div>
+        <button 
+            className={`text-white px-[20px] py-[10px] rounded-md`}
+            style={deposit?{backgroundColor: "#2d9cdc"}:{borderWidth: "1px", borderColor: "rgba(255,255,255,0.5)", borderStyle: "solid", cursor: "unset", pointerEvents: "none" }}
+            // onClick={() => {setModalOpen(true)}}
+          >
+            Deposit
+        </button>
+          <Link
+            className='bg-[#2d9cdc] text-white px-[20px] py-[10px] rounded-md'
+            href="/orders"
+          >
+            View Orders
+          </Link>
           <button 
             className='bg-[#2d9cdc] text-white px-[20px] py-[10px] rounded-md'
             onClick={() => {setModalOpen(true)}}
@@ -51,7 +67,8 @@ export default function Navbar() {
             Create Market
           </button>
           <DynamicWidget />
-        </div>
+        {/* <div className='flex flex-row gap-[10px] items-center'>
+        </div> */}
       </div>
       <div className="w-[100%] h-[1px] bg-[rgba(255,255,255,0.3)] "/>
 
