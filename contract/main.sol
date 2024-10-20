@@ -5,344 +5,323 @@ interface IERC20 {
     function transferFrom(
         address sender,
         address recipient,
-        uint amount
+        uint256 amount
     ) external returns (bool);
-    function transfer(address recipient, uint amount) external returns (bool);
-    function balanceOf(address account) external view returns (uint);
-    function allowance(
-        address owner,
-        address spender
-    ) external view returns (uint);
+    function transfer(address recipient, uint256 amount) external returns (bool);
 }
 
 contract Probana {
     IERC20 public usdc;
-    enum Outcome {
-        Yes,
-        No
-    }
+
+    enum Outcome { Yes, No }
+    enum Side { Buy, Sell }
 
     struct Market {
-        uint id;
-        string name;
+        uint256 id;
+        string question;
         string rules;
-        address creator;
         bool isActive;
         Outcome winningOutcome;
-        string yesLabel; // Add this line for custom Yes label
-        string noLabel;  // Add this line for custom No label
     }
 
     struct Order {
-        uint id;
-        uint marketId;
+        uint256 id;
+        uint256 marketId;
         address trader;
+        Side side;
         Outcome outcome;
-        uint amount;
-        uint price; // Represented as 1-999 (0.001 cents to 99.9 cents)
+        uint256 amount; // Amount in shares (6 decimals)
+        uint256 price;  // Price per share in USDC (6 decimals)
+        uint256 filled; // Amount of shares already filled
     }
 
-    uint public nextMarketId;
-    uint public nextOrderId;
-    address public resolverAdmin;
+    uint256 public nextMarketId;
+    uint256 public nextOrderId;
 
-    mapping(uint => Market) public markets;
-    mapping(uint => Order) public orders;
-    mapping(uint => uint[]) public marketYesOrders; // Maps market ID to Yes orders
-    mapping(uint => uint[]) public marketNoOrders; // Maps market ID to No orders
+    address public owner; // Added owner variable
 
-    mapping(address => uint) public balances; // USDC balance within the contract for each user
+    mapping(uint256 => Market) public markets;
 
-    mapping(uint => mapping(address => uint)) public yesShares; // Maps market ID to user address to Yes shares
-    mapping(uint => mapping(address => uint)) public noShares;  // Maps market ID to user address to No shares
+    mapping(uint256 => mapping(Side => mapping(Outcome => Order[]))) public orderBook;
 
-    event MarketCreated(
-        uint marketId,
-        string name,
-        string rules,
-        address creator,
-        string yesLabel,
-        string noLabel
-    );
-    event MarketClosed(uint marketId, Outcome winningOutcome); // Modify event to include winning outcome
-    event OrderPlaced(
-        uint orderId,
-        uint marketId,
-        address trader,
-        Outcome outcome,
-        uint amount,
-        uint price
-    );
+    mapping(address => uint256) public balances; // USDC balances
 
-    event OrderCancelled(uint orderId);
-    event OrderMatched(
-        uint marketId,
-        uint orderId,
-        uint matchedAmount,
-        uint price
-    );
-    event Deposit(address indexed user, uint amount);
-    event Withdraw(address indexed user, uint amount);
-    event OrderBookUpdated(
-        uint marketId,
-        uint[] yesOrders,
-        uint[] noOrders
-    );
-    event SharesMerged(uint marketId, address indexed user, uint sharesMerged, uint payout);
+    mapping(uint256 => mapping(address => uint256)) public yesShares; // Market ID => Trader => Shares
+    mapping(uint256 => mapping(address => uint256)) public noShares;
 
-    constructor(address usdcAddress) {
-        usdc = IERC20(usdcAddress);
-        resolverAdmin = msg.sender;
+    event MarketCreated(uint256 marketId, string question, string rules);
+    event MarketResolved(uint256 marketId, Outcome winningOutcome);
+    event OrderPlaced(uint256 orderId, uint256 marketId, address trader, Side side, Outcome outcome, uint256 amount, uint256 price);
+    event OrderCancelled(uint256 orderId);
+    event OrderMatched(uint256 marketId, uint256 orderId1, uint256 orderId2, uint256 matchedAmount);
+    event Deposit(address indexed user, uint256 amount);
+    event Withdrawal(address indexed user, uint256 amount);
+    event WinningsClaimed(uint256 marketId, address indexed user, uint256 amount);
+
+    constructor(address _usdcAddress) {
+        usdc = IERC20(_usdcAddress);
+        owner = msg.sender; // Set the contract deployer as the owner
     }
 
-    function createMarket(
-        string memory name,
-        string memory rules,
-        string memory yesLabel,
-        string memory noLabel
-    ) external {
-        uint marketId = nextMarketId++;
-        markets[marketId] = Market(
-            marketId, 
-            name, 
-            rules, 
-            msg.sender, 
-            true, 
-            Outcome.Yes, // Default value, can be set to any as it won't be used until market is closed
-            yesLabel,    // Set custom Yes label
-            noLabel      // Set custom No label
-        );
-        emit MarketCreated(marketId, name, rules, msg.sender, yesLabel, noLabel);
-    }
-
-    function closeMarket(uint marketId, Outcome winningOutcome) external {
-        Market storage market = markets[marketId];
-        require(
-            resolverAdmin == msg.sender,
-            "Only the market creator can close the market"
-        );
-        require(market.isActive, "Market is already closed");
-
-        market.isActive = false;
-        market.winningOutcome = winningOutcome; // Set the winning outcome
-
-        // Distribute funds to the winning side
-        _distributeFunds(marketId, winningOutcome);
-
-        emit MarketClosed(marketId, winningOutcome);
-    }
-
-    function _distributeFunds(uint marketId, Outcome winningOutcome) internal {
-        uint[] storage winningOrders = winningOutcome == Outcome.Yes
-            ? marketYesOrders[marketId]
-            : marketNoOrders[marketId];
-
-        for (uint i = 0; i < winningOrders.length; i++) {
-            Order storage order = orders[winningOrders[i]];
-            uint payout = (order.amount * order.price) / 1000;
-            balances[order.trader] += payout;
-        }
-    }
-
-    function deposit(uint amount) external {
-        require(amount > 0, "Amount must be greater than 0");
-        require(
-            usdc.transferFrom(msg.sender, address(this), amount),
-            "Transfer failed"
-        );
-
+    // Deposit USDC into the contract
+    function deposit(uint256 amount) external {
+        require(amount > 0, "Amount must be greater than zero");
+        require(usdc.transferFrom(msg.sender, address(this), amount), "USDC transfer failed");
         balances[msg.sender] += amount;
         emit Deposit(msg.sender, amount);
     }
 
-    function withdraw(uint amount) external {
-        require(balances[msg.sender] >= amount, "Insufficient balance");
-
+    // Withdraw USDC from the contract
+    function withdraw(uint256 amount) external {
+        require(balances[msg.sender] >= amount, "Insufficient balance to withdraw");
         balances[msg.sender] -= amount;
-        require(usdc.transfer(msg.sender, amount), "Transfer failed");
-
-        emit Withdraw(msg.sender, amount);
+        require(usdc.transfer(msg.sender, amount), "USDC transfer failed");
+        emit Withdrawal(msg.sender, amount);
     }
 
+    // Create a new market
+    function createMarket(string calldata question,string calldata rules) external {
+        markets[nextMarketId] = Market({
+            id: nextMarketId,
+            question: question,
+            isActive: true,
+            winningOutcome: Outcome.Yes ,// Default value
+            rules: rules
+        });
+        emit MarketCreated(nextMarketId, question,rules);
+        nextMarketId++;
+    }
+
+    // Place an order
     function placeOrder(
-        uint marketId,
+        uint256 marketId,
+        Side side,
         Outcome outcome,
-        uint amount,
-        uint price
+        uint256 amount,
+        uint256 price
     ) external {
-        Market storage market = markets[marketId];
-        require(market.isActive, "Market is not active");
-        require(amount > 0, "Amount must be greater than 0");
-        require(price >= 1 && price <= 999, "Price must be between 1 and 999");
+        require(markets[marketId].isActive, "Market is not active");
+        require(amount > 0, "Order amount must be greater than zero");
+        require(price > 0 && price < 1e6, "Price must be between 0 and 1e6 (1 USDC)");
 
-        uint orderCost = (amount * price) / 1000;
-        require(
-            balances[msg.sender] >= orderCost,
-            "Insufficient balance to place order"
-        );
-
-        balances[msg.sender] -= orderCost;
-
-        uint orderId = nextOrderId++;
-        orders[orderId] = Order(
-            orderId,
-            marketId,
-            msg.sender,
-            outcome,
-            amount,
-            price
-        );
-
-        if (outcome == Outcome.Yes) {
-            marketYesOrders[marketId].push(orderId);
-            yesShares[marketId][msg.sender] += amount; // Add Yes shares
+        if (side == Side.Buy) {
+            // Lock up funds for buy order
+            uint256 totalCost = (amount * price) / 1e6; // amount * price per share
+            require(balances[msg.sender] >= totalCost, "Insufficient balance for buy order");
+            balances[msg.sender] -= totalCost;
         } else {
-            marketNoOrders[marketId].push(orderId);
-            noShares[marketId][msg.sender] += amount; // Add No shares
+            // Ensure the seller has enough shares
+            if (outcome == Outcome.Yes) {
+                require(yesShares[marketId][msg.sender] >= amount, "Not enough YES shares to sell");
+                yesShares[marketId][msg.sender] -= amount;
+            } else {
+                require(noShares[marketId][msg.sender] >= amount, "Not enough NO shares to sell");
+                noShares[marketId][msg.sender] -= amount;
+            }
         }
 
-        emit OrderPlaced(orderId, marketId, msg.sender, outcome, amount, price);
-        emit OrderBookUpdated(marketId, marketYesOrders[marketId], marketNoOrders[marketId]); // Emit order book update
-        matchOrders(marketId);
+        Order memory newOrder = Order({
+            id: nextOrderId,
+            marketId: marketId,
+            trader: msg.sender,
+            side: side,
+            outcome: outcome,
+            amount: amount,
+            price: price,
+            filled: 0
+        });
+
+        // Add the order to the order book
+        orderBook[marketId][side][outcome].push(newOrder);
+
+        emit OrderPlaced(nextOrderId, marketId, msg.sender, side, outcome, amount, price);
+
+        // Attempt to match orders
+        matchOrders(marketId, side, outcome);
+
+        nextOrderId++;
     }
 
-    function cancelOrder(uint orderId) external {
-        Order memory order = orders[orderId];
-        require(
-            order.trader == msg.sender,
-            "Only the order creator can cancel"
-        );
+    // Match orders
+    function matchOrders(uint256 marketId, Side side, Outcome outcome) internal {
+        Side oppositeSide = side;
+        Outcome oppositeOutcome = outcome == Outcome.Yes ? Outcome.No : Outcome.Yes;
 
-        uint refundAmount = (order.amount * order.price) / 1000;
-        balances[msg.sender] += refundAmount;
+        Order[] storage myOrders = orderBook[marketId][side][outcome];
+        Order[] storage oppositeOrders = orderBook[marketId][oppositeSide][oppositeOutcome];
 
-        delete orders[orderId];
-        _removeOrderFromArray(orderId, order.marketId, order.outcome);
+        if (myOrders.length == 0 || oppositeOrders.length == 0) {
+            return;
+        }
 
-        emit OrderCancelled(orderId);
-        emit OrderBookUpdated(order.marketId, marketYesOrders[order.marketId], marketNoOrders[order.marketId]); // Emit order book update
-    }
+        Order storage myOrder = myOrders[myOrders.length - 1];
 
-    function matchOrders(uint marketId) internal {
-        while (
-            marketYesOrders[marketId].length > 0 &&
-            marketNoOrders[marketId].length > 0
-        ) {
-            uint yesOrderId = marketYesOrders[marketId][0];
-            uint noOrderId = marketNoOrders[marketId][0];
+        while (myOrder.filled < myOrder.amount && oppositeOrders.length > 0) {
+            Order storage oppOrder = oppositeOrders[oppositeOrders.length - 1];
 
-            Order storage yesOrder = orders[yesOrderId];
-            Order storage noOrder = orders[noOrderId];
+            // Check if prices are complementary
+            if (myOrder.price + oppOrder.price == 1e6) {
+                uint256 matchedAmount = min(myOrder.amount - myOrder.filled, oppOrder.amount - oppOrder.filled);
 
-            if (yesOrder.price >= noOrder.price) {
-                uint matchedAmount = _min(yesOrder.amount, noOrder.amount);
-                uint matchedPrice = (yesOrder.price + noOrder.price) / 2;
+                if (matchedAmount > 0) {
+                    if (side == Side.Buy) {
+                        // Both buyers receive shares
+                        if (outcome == Outcome.Yes) {
+                            yesShares[marketId][myOrder.trader] += matchedAmount;
+                            noShares[marketId][oppOrder.trader] += matchedAmount;
+                        } else {
+                            noShares[marketId][myOrder.trader] += matchedAmount;
+                            yesShares[marketId][oppOrder.trader] += matchedAmount;
+                        }
+                    } else {
+                        // Both sellers receive funds
+                        uint256 myProceeds = (matchedAmount * myOrder.price) / 1e6;
+                        uint256 oppProceeds = (matchedAmount * oppOrder.price) / 1e6;
 
-                yesOrder.amount -= matchedAmount;
-                noOrder.amount -= matchedAmount;
+                        balances[myOrder.trader] += myProceeds;
+                        balances[oppOrder.trader] += oppProceeds;
+                    }
 
-                uint matchedCost = (matchedAmount * matchedPrice) / 1000;
-                balances[yesOrder.trader] += matchedCost;
-                balances[noOrder.trader] += matchedCost;
+                    myOrder.filled += matchedAmount;
+                    oppOrder.filled += matchedAmount;
 
-                emit OrderMatched(
-                    marketId,
-                    yesOrderId,
-                    matchedAmount,
-                    matchedPrice
-                );
-                emit OrderMatched(
-                    marketId,
-                    noOrderId,
-                    matchedAmount,
-                    matchedPrice
-                );
+                    emit OrderMatched(marketId, myOrder.id, oppOrder.id, matchedAmount);
 
-                if (yesOrder.amount == 0) {
-                    _removeOrderFromArray(yesOrderId, marketId, Outcome.Yes);
+                    // Remove fully filled orders
+                    if (oppOrder.filled == oppOrder.amount) {
+                        oppositeOrders.pop();
+                    }
+                } else {
+                    break;
                 }
-                if (noOrder.amount == 0) {
-                    _removeOrderFromArray(noOrderId, marketId, Outcome.No);
-                }
-
-                emit OrderBookUpdated(marketId, marketYesOrders[marketId], marketNoOrders[marketId]); // Emit order book update
             } else {
                 break;
             }
         }
+
+        // Remove my order if fully filled
+        if (myOrder.filled == myOrder.amount) {
+            myOrders.pop();
+        }
     }
 
-    function _removeOrderFromArray(
-        uint orderId,
-        uint marketId,
-        Outcome outcome
-    ) internal {
-        uint[] storage orderArray = outcome == Outcome.Yes
-            ? marketYesOrders[marketId]
-            : marketNoOrders[marketId];
-        for (uint i = 0; i < orderArray.length; i++) {
-            if (orderArray[i] == orderId) {
-                orderArray[i] = orderArray[orderArray.length - 1];
-                orderArray.pop();
+    // Cancel an order
+    function cancelOrder(uint256 marketId, uint256 orderId, Side side, Outcome outcome) external {
+        Order[] storage orders = orderBook[marketId][side][outcome];
+
+        for (uint256 i = 0; i < orders.length; i++) {
+            if (orders[i].id == orderId) {
+                require(orders[i].trader == msg.sender, "Not your order");
+                uint256 unfilledAmount = orders[i].amount - orders[i].filled;
+
+                if (side == Side.Buy) {
+                    uint256 refundAmount = (unfilledAmount * orders[i].price) / 1e6;
+                    balances[msg.sender] += refundAmount;
+                } else {
+                    // Return shares to the seller
+                    if (outcome == Outcome.Yes) {
+                        yesShares[marketId][msg.sender] += unfilledAmount;
+                    } else {
+                        noShares[marketId][msg.sender] += unfilledAmount;
+                    }
+                }
+
+                // Remove the order
+                orders[i] = orders[orders.length - 1];
+                orders.pop();
+
+                emit OrderCancelled(orderId);
                 break;
             }
         }
-    } 
+    }
 
-    function _min(uint a, uint b) internal pure returns (uint) {
+    // Resolve a market
+    function resolveMarket(uint256 marketId, Outcome winningOutcome) external {
+        require(msg.sender == owner, "Only contract owner can resolve market"); // Only owner can resolve
+        Market storage market = markets[marketId];
+        require(market.isActive, "Market already resolved");
+        market.isActive = false;
+        market.winningOutcome = winningOutcome;
+        emit MarketResolved(marketId, winningOutcome);
+    }
+
+    // Claim winnings
+    function claimWinnings(uint256 marketId) external {
+        Market storage market = markets[marketId];
+        require(!market.isActive, "Market not yet resolved");
+
+        uint256 payout;
+        if (market.winningOutcome == Outcome.Yes) {
+            payout = yesShares[marketId][msg.sender];
+            yesShares[marketId][msg.sender] = 0;
+        } else {
+            payout = noShares[marketId][msg.sender];
+            noShares[marketId][msg.sender] = 0;
+        }
+
+        require(payout > 0, "No winnings to claim");
+
+        balances[msg.sender] += payout;
+
+        emit WinningsClaimed(marketId, msg.sender, payout);
+    }
+
+    // Utility functions
+    function min(uint256 a, uint256 b) internal pure returns (uint256) {
         return a < b ? a : b;
     }
 
-    function getMarket(uint marketId) external view returns (Market memory) {
-        return markets[marketId];
+        // Get Order Book Category A: YES share buys and NO share sells
+    function getOrderBookCata(uint256 marketId) public view returns (
+        Order[] memory yesBuys,
+        Order[] memory noSells
+    ) {
+        yesBuys = orderBook[marketId][Side.Buy][Outcome.Yes];
+        noSells = orderBook[marketId][Side.Sell][Outcome.No];
     }
 
-    function getOrder(uint orderId) external view returns (Order memory) {
-        return orders[orderId];
+    // Get Order Book Category B: YES share sells and NO share buys
+    function getOrderBookCatb(uint256 marketId) public view returns (
+        Order[] memory yesSells,
+        Order[] memory noBuys
+    ) {
+        yesSells = orderBook[marketId][Side.Sell][Outcome.Yes];
+        noBuys = orderBook[marketId][Side.Buy][Outcome.No];
     }
 
-    function getYesOrders(uint marketId) external view returns (uint[] memory) {
-        return marketYesOrders[marketId];
-    }
+    // Get all positions of a user across all markets
+    function getUserPositions(address user) public view returns (
+        uint256[] memory marketIds,
+        uint256[] memory yesShareBalances,
+        uint256[] memory noShareBalances,
+        uint256 usdcBalance
+    ) {
+        usdcBalance = balances[user];
+        uint256 marketCount = nextMarketId;
+        uint256 positionCount = 0;
 
-    function getNoOrders(uint marketId) external view returns (uint[] memory) {
-        return marketNoOrders[marketId];
-    }
-
-    function getUserOrdersForMarket(address user, uint marketId) external view returns (Order[] memory) {
-        uint count = 0;
-        for (uint i = 0; i < nextOrderId; i++) {
-            if (orders[i].trader == user && orders[i].marketId == marketId) {
-                count++;
+        // First, count how many markets the user has positions in
+        for (uint256 i = 0; i < marketCount; i++) {
+            if (yesShares[i][user] > 0 || noShares[i][user] > 0) {
+                positionCount++;
             }
         }
 
-        Order[] memory userOrders = new Order[](count);
-        uint index = 0;
-        for (uint i = 0; i < nextOrderId; i++) {
-            if (orders[i].trader == user && orders[i].marketId == marketId) {
-                userOrders[index] = orders[i];
+        // Initialize arrays with the correct size
+        marketIds = new uint256[](positionCount);
+        yesShareBalances = new uint256[](positionCount);
+        noShareBalances = new uint256[](positionCount);
+        uint256 index = 0;
+
+        // Populate the arrays with user's positions
+        for (uint256 i = 0; i < marketCount; i++) {
+            if (yesShares[i][user] > 0 || noShares[i][user] > 0) {
+                marketIds[index] = i;
+                yesShareBalances[index] = yesShares[i][user];
+                noShareBalances[index] = noShares[i][user];
                 index++;
             }
         }
-
-        return userOrders;
-    }
-
-    function mergeShares(uint marketId) external {
-        uint userYesShares = yesShares[marketId][msg.sender];
-        uint userNoShares = noShares[marketId][msg.sender];
-
-        require(userYesShares > 0 && userNoShares > 0, "Insufficient shares to merge");
-
-        uint sharesToMerge = _min(userYesShares, userNoShares);
-
-        yesShares[marketId][msg.sender] -= sharesToMerge;
-        noShares[marketId][msg.sender] -= sharesToMerge;
-
-        uint payout = sharesToMerge * 1000; // Each share is worth 1 USDC (1000 in contract terms)
-        balances[msg.sender] += payout;
-
-        emit SharesMerged(marketId, msg.sender, sharesToMerge, payout);
     }
 }
