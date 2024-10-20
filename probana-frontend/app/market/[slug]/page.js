@@ -84,6 +84,7 @@ function MarketPage({ params, searchParams }) {
     const [type, setType] = useState('Yes');
     const [marketData, setMarketData] = useState(null);
     const [txnHash, setTxnHash] = useState(''); // Ensure this is at the top level
+    const [amount, setAmount] = useState(100);
 
     useEffect(() => {
         // if (!router.isReady) return; // Ensure router is ready before using it
@@ -473,9 +474,11 @@ function MarketPage({ params, searchParams }) {
             const iface = new ethers.utils.Interface(abi);
 
             console.log(amount)
-            console.log([params.slug, side === "Buy" ? 0 : 1, type === "Yes" ? 0 : 1, parseFloat(amount) * 10 ** 6, parseFloat(price) * 10 ** 4])
+            // console.log([params.slug, side === "Buy" ? 0 : 1, type === "Yes" ? 0 : 1, parseFloat(amount) * 10 ** 6, parseFloat(price) * 10 ** 4])
+
+            console.log("hi sisters", [parseInt(params.slug), side === "Buy" ? 0 : 1, type === "Yes" ? 0 : 1, parseFloat(amount) * 10 ** 6, parseFloat(price) * 10 ** 4])
             // Encode the function call
-            const data = iface.encodeFunctionData("placeOrder", [params.slug, side === "Buy" ? 0 : 1, type === "Yes" ? 0 : 1, parseFloat(amount) * 10 ** 6, parseFloat(price) * 10 ** 4]);
+            const data = iface.encodeFunctionData("placeOrder", [parseInt(params.slug), side === "Buy" ? 0 : 1, type === "Yes" ? 0 : 1, parseFloat(amount) * 10 ** 6, parseFloat(price) * 10 ** 4]);
 
             const transaction = {
                 to: contractAddress,
@@ -563,7 +566,7 @@ function MarketPage({ params, searchParams }) {
                         </div>
                         <div>
                             <label htmlFor="amount" className="block mb-1">Amount</label>
-                            <input type="number" id="amount" className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+                            <input value={amount} onChange={(e) => { setAmount(e.target.value) }} type="number" id="amount" className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
                         </div>
                         <div>
                             <label htmlFor="price" className="block mb-1">Price</label>
