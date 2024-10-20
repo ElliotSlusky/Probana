@@ -1,82 +1,41 @@
 const marketDetails = [
-    {
-      key: 1,
-      prompt: "Who is going to win the 2024 presidential election?",
-      options: [
-        "Donald Trump",
-        "Kamala Harris",
-        "Ryan Ng"
-      ],
-      votes: [20, 30, 92],
-      sumVotes: 142
-    },
-    {
-      key: 2,
-      prompt: "Who is going to win the 2024 presidential election?",
-      options: [
-        "Donald Trump",
-        "Kamala Harris",
-        "Ryan Ng"
-      ],
-      votes: [20, 30, 92],
-      sumVotes: 142
-    },
-    {
-      key: 3,
-      prompt: "Who is going to win the 2024 presidential election?",
-      options: [
-        "Donald Trump",
-        "Kamala Harris",
-        "Ryan Ng"
-      ],
-      votes: [20, 30, 92],
-      sumVotes: 142
-    },
-    {
-      key: 4,
-      prompt: "Who is going to win the 2024 presidential election?",
-      options: [
-        "Donald Trump",
-        "Kamala Harris",
-        "Ryan Ng"
-      ],
-      votes: [20, 30, 92],
-      sumVotes: 142
-    },
-    {
-      key: 5,
-      prompt: "Who is going to win the 2024 presidential election?",
-      options: [
-        "Donald Trump",
-        "Kamala Harris",
-        "Ryan Ng"
-      ],
-      votes: [20, 30, 92],
-      sumVotes: 142
-    },
-    {
-      key: 6,
-      prompt: "Who is going to win the 2024 presidential election?",
-      options: [
-        "Donald Trump",
-        "Kamala Harris",
-        "Ryan Ng"
-      ],
-      votes: [20, 30, 92],
-      sumVotes: 142
-    },
-    {
-      key: 7,
-      prompt: "Who is going to win the 2024 presidential election?",
-      options: [
-        "Donald Trump",
-        "Kamala Harris",
-        "Ryan Ng"
-      ],
-      votes: [20, 30, 92],
-      sumVotes: 142
-    },
+  {
+    key: 1,
+    prompt: "Senate control after 2024 election?",
+    option1: "Democrats",
+    option2: "Republicans",
+    votes1: 20,
+    votes2: 30,
+    odds: 0.3
+  },
+  {
+    key: 2,
+    prompt: "Senate control after 2024 election?",
+    option1: "Democrats",
+    option2: "Republicans",
+    votes1: 20,
+    votes2: 30,
+    odds: 0.3
+  },
+  {
+    key: 3,
+    prompt: "Senate control after 2024 election?",
+    option1: "Democrats",
+    option2: "Republicans",
+    votes1: 20,
+    votes2: 30,
+    odds: 0.3
+  },
+  {
+    key: 4,
+    prompt: "Senate control after 2024 election?",
+    option1: "Democrats",
+    option2: "Republicans",
+    votes1: 20,
+    votes2: 30,
+    odds: 0.3
+  },
 
-  ]
+]
 
 export default marketDetails
