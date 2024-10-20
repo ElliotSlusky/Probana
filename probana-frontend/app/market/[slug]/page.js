@@ -1,8 +1,9 @@
 "use client"
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter } from 'next/router'
+import { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
-import OrderbookUI from '../components/orderbookUI';
+import axios from 'axios';
+import OrderbookUI from '../../components/orderbookUI';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -24,14 +25,49 @@ ChartJS.register(
     Legend
 );
 
-export default function MarketPage({ params }) {
+export default function MarketPage({ params, searchParams }) {
+
+
     const [price, setPrice] = useState(0.5); // Example initial price
     const [side, setSide] = useState('Buy');
     const [type, setType] = useState('Yes');
-    const router = useRouter()
-    const { prompt } = router.query
 
-    console.log(prompt, "hi")
+    const [marketData, setMarketData] = useState(null);
+
+
+    useEffect(() => {
+        // if (!router.isReady) return; // Ensure router is ready before using it
+
+        async function fetchMarketData() {
+            const response = await axios.post("https://subgraph.satsuma-prod.com/97d738dd3352/elliots-team--201737/Probana/version/v0.0.1-new-version/api", `{"query":"{ marketCreateds(first: 500) { name id rules yesLabel noLabel creator blockTimestamp marketId } marketCloseds(first: 500) { id blockTimestamp marketId } }"}`)
+            // find the market created with the id that matches params.slug
+            let found = null
+            for (let i = 0; i < response.data.data.marketCreateds.length; i++) {
+                console.log(response.data.data.marketCreateds[i].marketId, params.slug)
+                if (response.data.data.marketCreateds[i].marketId == params.slug) {
+
+                    found = response.data.data.marketCreateds[i]
+
+                    break;
+                }
+            }
+
+            if (found == null) {
+                // redirect to /
+                window.location.href = '/';
+                return
+            }
+
+            setMarketData(found)
+
+
+
+        }
+
+
+        fetchMarketData();
+
+    }, [params.slug]); // Add router.isReady to dependencies
 
     // Function to convert odds to cent format and adjust for "No" type
     const convertOddsToCents = (odds) => {
@@ -122,7 +158,7 @@ export default function MarketPage({ params }) {
 
     return (
         <div className="flex flex-col min-h-screen p-8 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-            <h1 className="text-3xl font-bold mb-6">{params.market}</h1>
+            <h1 className="text-3xl font-bold mb-6">{marketData?.name}</h1>
 
             <div className="flex flex-row space-x-8">
                 <div className="w-3/4">

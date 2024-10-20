@@ -57,7 +57,9 @@ contract Probana {
         uint marketId,
         string name,
         string rules,
-        address creator
+        address creator,
+        string yesLabel,
+        string noLabel
     );
     event MarketClosed(uint marketId, Outcome winningOutcome); // Modify event to include winning outcome
     event OrderPlaced(
@@ -106,7 +108,7 @@ contract Probana {
             yesLabel,    // Set custom Yes label
             noLabel      // Set custom No label
         );
-        emit MarketCreated(marketId, name, rules, msg.sender);
+        emit MarketCreated(marketId, name, rules, msg.sender, yesLabel, noLabel);
     }
 
     function closeMarket(uint marketId, Outcome winningOutcome) external {

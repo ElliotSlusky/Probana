@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react"
 import { IoMdClose } from "react-icons/io";
 
-export default function Market({marketDetail}) {
+export default function Market({ marketDetail }) {
 
     const key = marketDetail.key
     const prompt = marketDetail.prompt
@@ -25,8 +25,7 @@ export default function Market({marketDetail}) {
                 <div className="flex flex-row justify-between gap-[10px]">
                     <Link
                         className="bg-[#2C4B51] py-[8px] px-[8px] rounded-sm hover:bg-[#27ae60] text-[#27ae60] hover:text-white grow"
-                        href={`/marketprompt=${prompt}`}
-                    >
+                        href={{ pathname: '/marketprompt', query: prompt }}>
                         {option1}
                     </Link>
                     <Link
@@ -41,6 +40,6 @@ export default function Market({marketDetail}) {
             <div>
 
             </div>
-        </div>
+        </div >
     )
 }
