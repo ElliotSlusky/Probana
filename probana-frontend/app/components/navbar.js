@@ -107,7 +107,7 @@ function DepositModal({ depositOpen, setDepositOpen }) {
     const iface = new ethers.utils.Interface(abi);
 
     // Encode the function call
-    const data = iface.encodeFunctionData("deposit", [depositAmt]);
+    const data = iface.encodeFunctionData("deposit", [depositAmt * 10 ** 6]);
 
     const transaction = {
       to: contractAddress,
