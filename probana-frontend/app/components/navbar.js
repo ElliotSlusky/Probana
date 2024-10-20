@@ -85,6 +85,9 @@ function MarketModal({ marketOpen, setMarketOpen }) {
 }
 
 function DepositModal({ depositOpen, setDepositOpen }) {
+  const [depositAmt, setDepositAmt] = useState()
+
+
   return (
     <div className="absolute w-full h-full bg-[rgba(0,0,0,0.5)] items-center justify-center flex" onClick={() => { setDepositOpen(false) }}>
       <div className="flex-col flex gap-[10px] items-center bg-[#1d2b39] w-min p-[50px] rounded-lg" onClick={(e) => { e.stopPropagation() }}>
@@ -92,15 +95,13 @@ function DepositModal({ depositOpen, setDepositOpen }) {
           <h3 className='text-[24px] font-bold'>
             Deposit Money
           </h3>
-          <IoMdClose/>
+          <button onClick={() => setDepositOpen(false)}>
+            <IoMdClose size={25} className='p-[4px] rounded-sm bg-[rgba(255,255,255,0.3)] w-min h-min'/>
+          </button>
         </div>
-        {/* <div className="bg-[#1d2b39] rounded-md px-[15px] py-[10px] w-min border-[1px] border-[rgba(255,255,255,0.5)] border-solid h-min">
-          <input value={prompt} onChange={(e) => { setPrompt(e.target.value) }} type="text" placeholder="Prompt" className="bg-transparent outline-none" />
-        </div>
-
         <div className="bg-[#1d2b39] rounded-md px-[15px] py-[10px] w-min border-[1px] border-[rgba(255,255,255,0.5)] border-solid h-min">
-          <input value={rules} onChange={(e) => { setRules(e.target.value) }} type="text" placeholder="Rules" className="bg-transparent outline-none" />
-        </div> */}
+          <input value={depositAmt} onChange={(e) => { setDepositAmt(e.target.value) }} type="number" placeholder="0.00" className="bg-transparent outline-none" />
+        </div>
 
         <button 
           className='bg-[#2d9cdc] text-white px-[20px] py-[10px] rounded-md'
