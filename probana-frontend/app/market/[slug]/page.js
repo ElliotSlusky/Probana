@@ -117,7 +117,7 @@ function MarketPage({ params, searchParams }) {
 
 
 
-
+        const cataarray = [];
         // Function to call a read function from the contract
         async function callReadFunction() {
             try {
@@ -359,6 +359,10 @@ function MarketPage({ params, searchParams }) {
                 // Call the contract function
                 const result = await contract.getOrderBookCata(marketId);
                 console.log('Result:', result);
+
+
+
+
             } catch (error) {
                 console.error('Error calling read function:', error);
             }
