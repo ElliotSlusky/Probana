@@ -272,7 +272,8 @@ contract Probana {
         return a < b ? a : b;
     }
 
-        // Get Order Book Category A: YES share buys and NO share sells
+    // Get Order Book Category A: YES share buys and NO share sells
+    
     function getOrderBookCata(uint256 marketId) public view returns (
         Order[] memory yesBuys,
         Order[] memory noSells
@@ -323,5 +324,46 @@ contract Probana {
                 index++;
             }
         }
+    }
+
+    // Get all active orders of a user
+    function getUserActiveOrders(address user) public view returns (Order[] memory) {
+        uint256 totalOrders = nextOrderId;
+        uint256 activeOrderCount = 0;
+
+        // First, count the number of active orders for the user
+        for (uint256 i = 0; i < totalOrders; i++) {
+            for (uint256 j = 0; j < 2; j++) { // Iterate over Side (Buy, Sell)
+                for (uint256 k = 0; k < 2; k++) { // Iterate over Outcome (Yes, No)
+                    Order[] storage orders = orderBook[i][Side(j)][Outcome(k)];
+                    for (uint256 l = 0; l < orders.length; l++) {
+                        if (orders[l].trader == user && orders[l].filled < orders[l].amount) {
+                            activeOrderCount++;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Initialize an array to store active orders
+        Order[] memory activeOrders = new Order[](activeOrderCount);
+        uint256 index = 0;
+
+        // Populate the array with active orders
+        for (uint256 i = 0; i < totalOrders; i++) {
+            for (uint256 j = 0; j < 2; j++) { // Iterate over Side (Buy, Sell)
+                for (uint256 k = 0; k < 2; k++) { // Iterate over Outcome (Yes, No)
+                    Order[] storage orders = orderBook[i][Side(j)][Outcome(k)];
+                    for (uint256 l = 0; l < orders.length; l++) {
+                        if (orders[l].trader == user && orders[l].filled < orders[l].amount) {
+                            activeOrders[index] = orders[l];
+                            index++;
+                        }
+                    }
+                }
+            }
+        }
+
+        return activeOrders;
     }
 }

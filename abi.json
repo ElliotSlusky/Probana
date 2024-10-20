@@ -2,6 +2,78 @@
     {
         "inputs": [
             {
+                "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "orderId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "enum Probana.Side",
+                "name": "side",
+                "type": "uint8"
+            },
+            {
+                "internalType": "enum Probana.Outcome",
+                "name": "outcome",
+                "type": "uint8"
+            }
+        ],
+        "name": "cancelOrder",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            }
+        ],
+        "name": "claimWinnings",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "question",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "rules",
+                "type": "string"
+            }
+        ],
+        "name": "createMarket",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "deposit",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "address",
                 "name": "_usdcAddress",
                 "type": "address"
@@ -167,6 +239,57 @@
         "type": "event"
     },
     {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "enum Probana.Side",
+                "name": "side",
+                "type": "uint8"
+            },
+            {
+                "internalType": "enum Probana.Outcome",
+                "name": "outcome",
+                "type": "uint8"
+            },
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "price",
+                "type": "uint256"
+            }
+        ],
+        "name": "placeOrder",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "enum Probana.Outcome",
+                "name": "winningOutcome",
+                "type": "uint8"
+            }
+        ],
+        "name": "resolveMarket",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
         "anonymous": false,
         "inputs": [
             {
@@ -190,6 +313,19 @@
         ],
         "name": "WinningsClaimed",
         "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "withdraw",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
     },
     {
         "anonymous": false,
@@ -227,78 +363,6 @@
             }
         ],
         "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "marketId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "orderId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "enum Probana.Side",
-                "name": "side",
-                "type": "uint8"
-            },
-            {
-                "internalType": "enum Probana.Outcome",
-                "name": "outcome",
-                "type": "uint8"
-            }
-        ],
-        "name": "cancelOrder",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "marketId",
-                "type": "uint256"
-            }
-        ],
-        "name": "claimWinnings",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "string",
-                "name": "question",
-                "type": "string"
-            },
-            {
-                "internalType": "string",
-                "name": "rules",
-                "type": "string"
-            }
-        ],
-        "name": "createMarket",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "deposit",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
     },
     {
@@ -525,6 +589,67 @@
                 "type": "address"
             }
         ],
+        "name": "getUserActiveOrders",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "id",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "marketId",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "trader",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "enum Probana.Side",
+                        "name": "side",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "enum Probana.Outcome",
+                        "name": "outcome",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "price",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "filled",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct Probana.Order[]",
+                "name": "",
+                "type": "tuple[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            }
+        ],
         "name": "getUserPositions",
         "outputs": [
             {
@@ -723,57 +848,6 @@
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "marketId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "enum Probana.Side",
-                "name": "side",
-                "type": "uint8"
-            },
-            {
-                "internalType": "enum Probana.Outcome",
-                "name": "outcome",
-                "type": "uint8"
-            },
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "price",
-                "type": "uint256"
-            }
-        ],
-        "name": "placeOrder",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "marketId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "enum Probana.Outcome",
-                "name": "winningOutcome",
-                "type": "uint8"
-            }
-        ],
-        "name": "resolveMarket",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
         "inputs": [],
         "name": "usdc",
         "outputs": [
@@ -784,19 +858,6 @@
             }
         ],
         "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "withdraw",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
     },
     {

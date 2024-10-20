@@ -387,8 +387,8 @@ function MarketPage({ params, searchParams }) {
 
                 // Set the order book data
                 setOrderBook({
-                    bids: [...noBuys, ...yesSells], // Combine noBuys and flipped yesSells into bids
-                    asks: [...yesBuys, ...noSells] // Combine yesBuys and flipped noSells into asks
+                    bids: [...yesBuys, ...noSells], // Combine noBuys and flipped yesSells into bids
+                    asks: [...noBuys, ...yesSells]// Combine yesBuys and flipped noSells into asks
                 });
 
             } catch (error) {
