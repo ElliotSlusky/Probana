@@ -15,6 +15,7 @@ import {
     Legend,
 } from 'chart.js';
 
+import Navbar from '../../components/navbar';
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -24,8 +25,52 @@ ChartJS.register(
     Tooltip,
     Legend
 );
+import {
+    DynamicContextProvider,
+    DynamicWidget,
+} from '@dynamic-labs/sdk-react-core';
+import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
+import { DynamicWagmiConnector } from '@dynamic-labs/wagmi-connector';
+import {
+    createConfig,
+    WagmiProvider,
+    useAccount,
+} from 'wagmi';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { http } from 'viem';
+import { polygon } from 'viem/chains';
+const queryClient = new QueryClient();
 
-export default function MarketPage({ params, searchParams }) {
+
+const config = createConfig({
+    chains: [polygon],
+    multiInjectedProviderDiscovery: false,
+    transports: {
+        [polygon.id]: http(),
+    },
+});
+
+export default function MarketPagrewe({ params, searchParams }) {
+
+    return (
+        <DynamicContextProvider
+            settings={{
+                environmentId: 'd001273d-4120-4857-ae19-2917f4b59790',
+                walletConnectors: [EthereumWalletConnectors],
+            }}
+        >
+            <WagmiProvider config={config}>
+                <QueryClientProvider client={queryClient}>
+                    <DynamicWagmiConnector>
+                        <Navbar />
+                        <MarketPage params={params} searchParams={searchParams} />
+                    </DynamicWagmiConnector>
+                </QueryClientProvider>
+            </WagmiProvider>
+        </DynamicContextProvider>
+    );
+}
+function MarketPage({ params, searchParams }) {
 
 
     const [price, setPrice] = useState(0.5); // Example initial price
@@ -160,6 +205,12 @@ export default function MarketPage({ params, searchParams }) {
         <div className="flex flex-col min-h-screen p-8 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
             <h1 className="text-3xl font-bold mb-6">{marketData?.name}</h1>
 
+            {/* New section to display the rules */}
+            <div className="mb-6 bg-gray-100 dark:bg-gray-800 p-4 rounded">
+                <h2 className="text-xl font-semibold mb-2">Market Rules</h2>
+                <p>{marketData?.rules}</p>
+            </div>
+
             <div className="flex flex-row space-x-8">
                 <div className="w-3/4">
                     <div className="mb-6 bg-gray-100 dark:bg-gray-800 p-4 rounded">
@@ -167,12 +218,12 @@ export default function MarketPage({ params, searchParams }) {
                         <p className="text-2xl">{(price * 100).toFixed(2)}%</p>
                     </div>
 
-                    <div className="mb-6 bg-gray-100 dark:bg-gray-800 p-4 rounded">
+                    {/* <div className="mb-6 bg-gray-100 dark:bg-gray-800 p-4 rounded">
                         <h2 className="text-xl font-semibold mb-2">Price Chart</h2>
                         <div className="h-64">
                             <Line data={chartData} options={chartOptions} />
                         </div>
-                    </div>
+                    </div> */}
 
                     <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded">
                         <OrderbookUI
