@@ -1,6 +1,6 @@
 "use client";
 
-import UnlimitOverlay from '@/app/components/unlimitOverlay';
+import UnlimitOverlay from '../../app/components/unlimitOverlay';
 
 const UnlimitPage = () => {
     return (
