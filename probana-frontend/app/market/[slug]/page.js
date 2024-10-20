@@ -83,6 +83,7 @@ function MarketPage({ params, searchParams }) {
 
     const [marketData, setMarketData] = useState(null);
 
+    const [txnHash, setTxnHash] = useState(''); // Move useState to the top level
 
     useEffect(() => {
         // if (!router.isReady) return; // Ensure router is ready before using it
@@ -453,20 +454,15 @@ function MarketPage({ params, searchParams }) {
     const adjustedAsks = type === 'Yes' ? orderBookData.asks : orderBookData.bids;
 
     async function handleSubmit(event) {
-        event.preventDefault()
-        console.log(event)
+        event.preventDefault();
+        console.log(event);
 
         const contractAddress = "0x7A0aE150F6E03f6B038B673c7B32341496F65f41";
-        // const spenderAddress = "0x7A0aE150F6E03f6B038B673c7B32341496F65f41";
-        // const amount = ethers.utils.parseUnits("1.0", 18); // Convert 1.0 ETH to wei
         const { primaryWallet } = useDynamicContext();
-        const [txnHash, setTxnHash] = useState('');
 
         if (!primaryWallet || !isEthereumWallet(primaryWallet)) return null;
 
         async function placeOrder() {
-
-
             const publicClient = await primaryWallet.getPublicClient();
             const walletClient = await primaryWallet.getWalletClient();
 
@@ -494,7 +490,7 @@ function MarketPage({ params, searchParams }) {
             console.log(receipt);
         };
 
-        createMarket()
+        placeOrder(); // Call the function to place the order
     }
 
     return (
