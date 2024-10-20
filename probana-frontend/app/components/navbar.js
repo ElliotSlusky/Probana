@@ -17,7 +17,6 @@ function Modal({ modalOpen, setModalOpen }) {
   const [prompt, setPrompt] = useState(null)
   const [option1, setOption1] = useState(null)
   const [option2, setOption2] = useState(null)
-
   const contractAddress = "0x7f27352D5F83Db87a5A3E00f4B07Cc2138D8ee52";
   const spenderAddress = "0x7A0aE150F6E03f6B038B673c7B32341496F65f41";
   const amount = ethers.utils.parseUnits("1.0", 18); // Convert 1.0 ETH to wei
@@ -26,24 +25,20 @@ function Modal({ modalOpen, setModalOpen }) {
 
   if (!primaryWallet || !isEthereumWallet(primaryWallet)) return null;
 
-  const onSubmit = async (event) => {
-    event.preventDefault();
+  async function createMarket() {
 
-    const formData = new FormData(event.currentTarget);
-    // const spender = formData.get('address');
-    // const amountToApprove = formData.get('amount');
 
     const publicClient = await primaryWallet.getPublicClient();
     const walletClient = await primaryWallet.getWalletClient();
 
     // Define the ABI of the contract function you want to call
     const abi = [
-      "function approve(address spender, uint256 amount) public returns (bool)"
+      "function createMarket(string question, string rules) public"
     ];
     const iface = new ethers.utils.Interface(abi);
 
     // Encode the function call
-    const data = iface.encodeFunctionData("approve", [spenderAddress, amount]);
+    const data = iface.encodeFunctionData("approve", []);
 
     const transaction = {
       to: contractAddress,
@@ -78,7 +73,7 @@ function Modal({ modalOpen, setModalOpen }) {
         <div className="bg-[#1d2b39] rounded-md px-[15px] py-[10px] w-min border-[1px] border-[rgba(255,255,255,0.5)] border-solid h-min">
           <input value={option2} onChange={(e) => { setOption2(e.target.value) }} type="text" placeholder="Option 2" className="bg-transparent outline-none" />
         </div>
-        <button className='bg-[#2d9cdc] text-white px-[20px] py-[10px] rounded-md'>
+        <button className='bg-[#2d9cdc] text-white px-[20px] py-[10px] rounded-md' onClick={createMarket}>
           Create Market
         </button>
       </div>
