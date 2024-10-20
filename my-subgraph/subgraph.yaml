@@ -6,7 +6,7 @@ schema:
 dataSources:
   - kind: ethereum
     name: Probana
-    network: mainnet
+    network: flow-mainnet
     source:
       address: "0x83FdcE89CA94d141fd1a6dCc62a91f93E2c0C51e"
       abi: Probana
