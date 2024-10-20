@@ -73,7 +73,7 @@ export default function MarketPagrewe({ params, searchParams }) {
     );
 }
 function MarketPage({ params, searchParams }) {
-
+    const { connector } = useAccount(); // Get the connected wallet's provider
 
     const [price, setPrice] = useState(0.5); // Example initial price
     const [side, setSide] = useState('Buy');
@@ -113,8 +113,13 @@ function MarketPage({ params, searchParams }) {
 
 
 
-        // Set up a provider (e.g., using Infura or Alchemy)
-        const provider = new ethers.providers.JsonRpcProvider('https://flow-mainnet.g.alchemy.com/v2/OkUye1LIb9ghN5Cxw1cEHi0G5wwWPW88');
+        // Use the connected wallet's provider
+        const provider = connector?.getProvider();
+
+        if (!provider) {
+            console.error('No provider found');
+            return;
+        }
 
         // Define the contract ABI and address
         const contractABI = [{
@@ -353,7 +358,7 @@ function MarketPage({ params, searchParams }) {
 
 
 
-    }, []); // Add router.isReady to dependencies
+    }, [connector]); // Add connector to dependencies
 
     // Function to convert odds to cent format and adjust for "No" type
     const convertOddsToCents = (odds) => {
