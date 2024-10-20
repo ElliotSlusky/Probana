@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: Probana
-    network: flow-mainnet
+    network: mainnet
     source:
-      address: "0xADd787234F5Aeaf810466b1Ec83ad7Cd03EfDB9d"
+      address: "0x13cC2FEb33639347aa8BFD3045275f1b88F18e6D"
       abi: Probana
-      startBlock: 4834440
+      startBlock: 4842668
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -23,6 +23,7 @@ dataSources:
         - OrderCancelled
         - OrderMatched
         - OrderPlaced
+        - SharesMerged
         - Withdraw
       abis:
         - name: Probana
@@ -42,8 +43,8 @@ dataSources:
           handler: handleOrderMatched
         - event: OrderPlaced(uint256,uint256,address,uint8,uint256,uint256)
           handler: handleOrderPlaced
+        - event: SharesMerged(uint256,indexed address,uint256,uint256)
+          handler: handleSharesMerged
         - event: Withdraw(indexed address,uint256)
           handler: handleWithdraw
       file: ./src/probana.ts
-
-description: "My Subgraph v1.0.1"  # Increment the version here

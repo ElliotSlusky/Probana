@@ -8,6 +8,7 @@ import {
   OrderCancelled,
   OrderMatched,
   OrderPlaced,
+  SharesMerged,
   Withdraw
 } from "../generated/Probana/Probana"
 
@@ -209,6 +210,38 @@ export function createOrderPlacedEvent(
   )
 
   return orderPlacedEvent
+}
+
+export function createSharesMergedEvent(
+  marketId: BigInt,
+  user: Address,
+  sharesMerged: BigInt,
+  payout: BigInt
+): SharesMerged {
+  let sharesMergedEvent = changetype<SharesMerged>(newMockEvent())
+
+  sharesMergedEvent.parameters = new Array()
+
+  sharesMergedEvent.parameters.push(
+    new ethereum.EventParam(
+      "marketId",
+      ethereum.Value.fromUnsignedBigInt(marketId)
+    )
+  )
+  sharesMergedEvent.parameters.push(
+    new ethereum.EventParam("user", ethereum.Value.fromAddress(user))
+  )
+  sharesMergedEvent.parameters.push(
+    new ethereum.EventParam(
+      "sharesMerged",
+      ethereum.Value.fromUnsignedBigInt(sharesMerged)
+    )
+  )
+  sharesMergedEvent.parameters.push(
+    new ethereum.EventParam("payout", ethereum.Value.fromUnsignedBigInt(payout))
+  )
+
+  return sharesMergedEvent
 }
 
 export function createWithdrawEvent(user: Address, amount: BigInt): Withdraw {

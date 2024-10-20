@@ -6,6 +6,7 @@ import {
   OrderCancelled as OrderCancelledEvent,
   OrderMatched as OrderMatchedEvent,
   OrderPlaced as OrderPlacedEvent,
+  SharesMerged as SharesMergedEvent,
   Withdraw as WithdrawEvent
 } from "../generated/Probana/Probana"
 import {
@@ -16,6 +17,7 @@ import {
   OrderCancelled,
   OrderMatched,
   OrderPlaced,
+  SharesMerged,
   Withdraw
 } from "../generated/schema"
 
@@ -119,6 +121,22 @@ export function handleOrderPlaced(event: OrderPlacedEvent): void {
   entity.outcome = event.params.outcome
   entity.amount = event.params.amount
   entity.price = event.params.price
+
+  entity.blockNumber = event.block.number
+  entity.blockTimestamp = event.block.timestamp
+  entity.transactionHash = event.transaction.hash
+
+  entity.save()
+}
+
+export function handleSharesMerged(event: SharesMergedEvent): void {
+  let entity = new SharesMerged(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  )
+  entity.marketId = event.params.marketId
+  entity.user = event.params.user
+  entity.sharesMerged = event.params.sharesMerged
+  entity.payout = event.params.payout
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp

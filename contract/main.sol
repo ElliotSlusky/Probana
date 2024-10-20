@@ -53,6 +53,9 @@ contract Probana {
 
     mapping(address => uint) public balances; // USDC balance within the contract for each user
 
+    mapping(uint => mapping(address => uint)) public yesShares; // Maps market ID to user address to Yes shares
+    mapping(uint => mapping(address => uint)) public noShares;  // Maps market ID to user address to No shares
+
     event MarketCreated(
         uint marketId,
         string name,
@@ -85,6 +88,7 @@ contract Probana {
         uint[] yesOrders,
         uint[] noOrders
     );
+    event SharesMerged(uint marketId, address indexed user, uint sharesMerged, uint payout);
 
     constructor(address usdcAddress) {
         usdc = IERC20(usdcAddress);
@@ -191,8 +195,10 @@ contract Probana {
 
         if (outcome == Outcome.Yes) {
             marketYesOrders[marketId].push(orderId);
+            yesShares[marketId][msg.sender] += amount; // Add Yes shares
         } else {
             marketNoOrders[marketId].push(orderId);
+            noShares[marketId][msg.sender] += amount; // Add No shares
         }
 
         emit OrderPlaced(orderId, marketId, msg.sender, outcome, amount, price);
@@ -321,5 +327,22 @@ contract Probana {
         }
 
         return userOrders;
+    }
+
+    function mergeShares(uint marketId) external {
+        uint userYesShares = yesShares[marketId][msg.sender];
+        uint userNoShares = noShares[marketId][msg.sender];
+
+        require(userYesShares > 0 && userNoShares > 0, "Insufficient shares to merge");
+
+        uint sharesToMerge = _min(userYesShares, userNoShares);
+
+        yesShares[marketId][msg.sender] -= sharesToMerge;
+        noShares[marketId][msg.sender] -= sharesToMerge;
+
+        uint payout = sharesToMerge * 1000; // Each share is worth 1 USDC (1000 in contract terms)
+        balances[msg.sender] += payout;
+
+        emit SharesMerged(marketId, msg.sender, sharesToMerge, payout);
     }
 }
