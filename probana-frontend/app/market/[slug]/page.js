@@ -122,7 +122,8 @@ function MarketPage({ params, searchParams }) {
         async function callReadFunction() {
             try {
                 // Use the connected wallet's provider
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+                const provider = new ethers.providers.JsonRpcProvider("https://flow-mainnet.g.alchemy.com/v2/OkUye1LIb9ghN5Cxw1cEHi0G5wwWPW88");
 
                 if (!provider) {
                     console.error('No provider found');
@@ -346,13 +347,17 @@ function MarketPage({ params, searchParams }) {
                     "stateMutability": "view",
                     "type": "function"
                 },]
-                const contractAddress = '0xD236817d53C20412E245699f2ae332eFDDf22D98';
+                const contractAddress = '0x7A0aE150F6E03f6B038B673c7B32341496F65f41';
 
                 // Create a contract instance
                 const contract = new ethers.Contract(contractAddress, contractABI, provider);
 
-                // Replace 'readFunctionName' with the actual function name you want to call
-                const result = await contract.getOrderBookCata(found.marketId);
+                // Log the market ID being used
+                const marketId = parseInt(params.slug);
+                console.log("Calling getOrderBookCata with marketId:", marketId);
+
+                // Call the contract function
+                const result = await contract.getOrderBookCata(marketId);
                 console.log('Result:', result);
             } catch (error) {
                 console.error('Error calling read function:', error);
@@ -581,3 +586,4 @@ function MarketPage({ params, searchParams }) {
         </div>
     );
 }
+
